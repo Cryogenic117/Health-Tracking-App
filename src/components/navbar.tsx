@@ -20,7 +20,7 @@ const moodAndEnergyTabOptions = {
 const sleepTabOptions = {
     tabBarIcon: () => <Image source={require('../../assets/SleepNavigationIcon.png')} />
 }
-const NavBarScreenOptions = {
+const navBarScreenOptions = {
     headerShown: false,
     tabBarShowLabel: false,
     tabBarActiveBackgroundColor: '#5838B4',
@@ -31,7 +31,7 @@ const NavBarScreenOptions = {
 
 export default function Navbar(): JSX.Element {
     return (
-        <Tab.Navigator screenOptions={NavBarScreenOptions}>
+        <Tab.Navigator screenOptions={navBarScreenOptions}>
             <Tab.Screen name="calendar" component={Calendar} options={calendarTabOptions} />
             <Tab.Screen name="medication" component={Medication} options={medicationTabOptions} />
             <Tab.Screen name="moodAndEnergy" component={MoodAndEnergy} options={moodAndEnergyTabOptions} />
