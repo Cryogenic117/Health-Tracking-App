@@ -19,6 +19,9 @@ export default function Calendar(): JSX.Element {
             items={items}
             setOpen={setOpen}
             setValue={setValue}
+            placeholder="Month"
+            showTickIcon={true}
+            hideSelectedItemIcon={true}
             setItems={setItems}
             style={styles.viewPicker}
             />
@@ -50,7 +53,7 @@ const styles = StyleSheet.create({
         paddingTop: 50
     },
     viewPicker: {
-        width: '40%',
+        width: '30%',
         height: '10%',
         left: 5
     }
