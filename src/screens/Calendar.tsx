@@ -20,7 +20,6 @@ export default function Calendar(): JSX.Element {
             setOpen={setOpen}
             setValue={setValue}
             placeholder="Month"
-            showTickIcon={true}
             hideSelectedItemIcon={true}
             setItems={setItems}
             style={styles.viewPicker}
