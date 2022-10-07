@@ -13,17 +13,18 @@ export default function Calendar(): JSX.Element {
     return (
         <View>
             <View style={styles.sectionBreak}/>
-            <DropDownPicker
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={setValue}
-            placeholder="Month"
-            hideSelectedItemIcon={true}
-            setItems={setItems}
-            style={styles.viewPicker}
-            />
+            {/* <DropDownPicker
+             open={open}
+             value={value}
+             items={items}
+             setOpen={setOpen}
+             setValue={setValue}
+             placeholder="Month"
+             hideSelectedItemIcon={true}
+             setItems={setItems}
+             style={styles.viewPicker}
+             /> */}
+           
             <MainCalendar onDayPress={() => {/*Render the detailed information for that day*/}}/>
             <View style={styles.dailyDataHeader}>
                 <Text style={styles.dailyDataHeaderText}>Daily Data</Text>
