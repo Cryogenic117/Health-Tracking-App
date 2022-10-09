@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Calendar as MainCalendar } from 'react-native-calendars'
-import DropDownPicker from 'react-native-dropdown-picker'
+import { Calendar as MainCalendar, CalendarList, Agenda } from 'react-native-calendars'
+// import DropDownPicker from 'react-native-dropdown-picker'
 
 export default function Calendar(): JSX.Element {
     const [open, setOpen] = useState(false);
@@ -24,17 +24,25 @@ export default function Calendar(): JSX.Element {
              setItems={setItems}
              style={styles.viewPicker}
              /> */}
-           
-            <MainCalendar onDayPress={() => {/*Render the detailed information for that day*/}}/>
-            <View style={styles.dailyDataHeader}>
-                <Text style={styles.dailyDataHeaderText}>Daily Data</Text>
-                <View style={styles.dailyDataHeaderLineSeperator}/>
+            <View style={styles.agenda}>                
+                <Agenda 
+                renderList={() => {
+                    return (
+                        <View style={styles.dailyDataHeader}>
+                            <Text style={styles.dailyDataHeaderText}>Daily Data</Text>
+                            <View style={styles.dailyDataHeaderLineSeperator}/>
+                        </View>
+                    )
+                }}/>
             </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    agenda: {
+        height: '100%'
+    },
     dailyDataHeader: {
         alignItems: 'center',
         padding: 10
