@@ -2,6 +2,46 @@ import React from 'react';
 import {View, Text, StyleSheet, Button, TouchableOpacity, Alert,} from 'react-native';
 import Slider from '@react-native-community/slider'
 import {useState} from "react";
+import { Text, View, StyleSheet, ImageBackground } from 'react-native';
+import { useState } from 'react';
+import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
+
+const radioButtonsData: RadioButtonProps[] = [
+{
+    id: 'btn1',
+    label : "Very Little (3 hours or less)",
+    value: "Very Little (3 hours or less)",
+    size: 30,
+    labelStyle: {color : '#B71C1C', fontSize: 20, fontWeight: 'bold'}
+}, 
+{
+    id: 'btn2',
+    label: "Some (4 to 5 hours)",
+    value: "Some (4 to 5 hours)",
+    size: 30,
+    labelStyle: {color : '#FFC107', fontSize: 20, fontWeight: 'bold'}
+},   
+{
+    id: 'btn3',
+    label: "A Good Amount (6 to 7 hours)",
+    value: "A Good Amount (6 to 7 hours)",
+    size: 30,
+    labelStyle: {color : '#43A047', fontSize: 20, fontWeight: 'bold'}
+},
+{
+    id: 'btn4',
+    label: "A lot (7 to 9 hours)",
+    value: "A lot (7 to 9 hours)",
+    size: 30,
+    labelStyle: {color : '#1B5E20', fontSize: 20, fontWeight: 'bold'}
+},
+{
+    id: 'btn5',
+    label: "Excessive (Over 9 hours)",
+    value: "Excessive (Over 9 hours)",
+    size: 30,
+    labelStyle: {color : '#FFC107', fontSize: 20, fontWeight: 'bold'}
+}]
 
 // todo:AKEEN make sliderValue text input
 // todo:AKEEN send sliderValue to calendar screen on button press
@@ -35,6 +75,27 @@ export default function Sleep(): JSX.Element {
                 <Text style={styles.buttonText}>Save Data</Text>
             </TouchableOpacity>
         </View>
+     
+
+    const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData);
+
+    function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
+    {
+        setRadioButtons(radioButtonsArray);
+    }
+
+    return (
+
+     <View> 
+       <Text style = {styles.question}>How much did you sleep today?</Text>
+        
+        <RadioGroup 
+
+            containerStyle={styles.buttons}
+            radioButtons = {radioButtons}
+            onPress = {onPressRadioButton}         
+        />
+    </View>
     );
 }
 
@@ -81,3 +142,16 @@ const styles = StyleSheet.create({
         width:325,
     }
 })
+
+    question: {
+        fontSize: 25,
+        padding: 20,
+        fontWeight: 'bold'
+    },
+    buttons: {
+        alignItems: 'flex-start',
+        padding: 20,
+        border: "10px",
+        paddingTop: 10
+    }
+});
