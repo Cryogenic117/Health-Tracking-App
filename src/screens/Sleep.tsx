@@ -1,9 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, Alert,} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert,} from 'react-native';
 import Slider from '@react-native-community/slider'
 import {useState} from "react";
-import { Text, View, StyleSheet, ImageBackground } from 'react-native';
-import { useState } from 'react';
 import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 
 const radioButtonsData: RadioButtonProps[] = [
@@ -49,9 +47,21 @@ const radioButtonsData: RadioButtonProps[] = [
 export default function Sleep(): JSX.Element {
     const [sliderValue, tempValue] = useState(0)
     const onPress = () => Alert.alert("Data Saved.");
-
+    const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData);
+    function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
+    {
+        setRadioButtons(radioButtonsArray);
+    }
     return (
         <View style={styles.sleepScreenView}>
+            <Text style = {styles.question}>How much did you sleep today?</Text>
+
+            <RadioGroup
+
+                containerStyle={styles.buttons}
+                radioButtons = {radioButtons}
+                onPress = {onPressRadioButton}
+            />
             <View style={styles.sliderView}>
                 <Slider
                     style={styles.slider}
@@ -75,28 +85,7 @@ export default function Sleep(): JSX.Element {
                 <Text style={styles.buttonText}>Save Data</Text>
             </TouchableOpacity>
         </View>
-     
-
-    const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData);
-
-    function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
-    {
-        setRadioButtons(radioButtonsArray);
-    }
-
-    return (
-
-     <View> 
-       <Text style = {styles.question}>How much did you sleep today?</Text>
-        
-        <RadioGroup 
-
-            containerStyle={styles.buttons}
-            radioButtons = {radioButtons}
-            onPress = {onPressRadioButton}         
-        />
-    </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -140,9 +129,7 @@ const styles = StyleSheet.create({
     slider:{
         height:25,
         width:325,
-    }
-})
-
+    },
     question: {
         fontSize: 25,
         padding: 20,
