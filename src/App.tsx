@@ -1,16 +1,12 @@
-import React from 'react';
-import { View, Text, } from 'react-native';
-import styles from './styles'
-import Navbar from "./navbar";
-export default function App(): JSX.Element {
-  return (
-      <View style={styles.container}>
-          <View style={styles.contentContainer}>
-            <Text>Hello, world!</Text>
-          </View>
+import React from 'react'
+import Navbar from "./components/Navbar"
+import { NavigationContainer } from '@react-navigation/native'
 
-          <Navbar />
-      </View>
-  );
+export default function App(): JSX.Element {
+    return (
+        <NavigationContainer>
+            <Navbar />
+        </NavigationContainer>
+    )
 }
 
