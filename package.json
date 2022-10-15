@@ -9,9 +9,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@expo/ngrok": "^4.1.0",
+<<<<<<< HEAD
     "@expo/webpack-config": "^0.17.0",
     "@freakycoder/react-native-bounceable": "^1.0.3",
+=======
+    "@react-native-community/slider": "^4.2.3",
+>>>>>>> b5b54ab817fcb86e86cbdd4aeeb4ed6429232bed
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/native": "^6.0.13",
     "@types/react": "~18.0.0",
@@ -22,10 +28,14 @@
     "react": "18.0.0",
     "react-dom": "^18.0.0",
     "react-native": "0.69.6",
+<<<<<<< HEAD
     "react-native-animated-spinkit": "^1.5.2",
     "react-native-calendars": "^1.1289.0",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-dynamic-search-bar": "^2.0.2",
+=======
+    "react-native-radio-buttons-group": "^2.2.11",
+>>>>>>> b5b54ab817fcb86e86cbdd4aeeb4ed6429232bed
     "react-native-safe-area-context": "^4.3.1",
     "react-native-spinkit": "^1.5.1",
     "react-native-web": "^0.18.9",

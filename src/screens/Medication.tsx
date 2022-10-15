@@ -8,7 +8,7 @@ export default function Medication(): JSX.Element {
             <SearchBar />
             <Text style={styles.header}>{"Your Medications:"}</Text>
             {dataList.map(medicationName => (
-                <Text style={styles.medicationListItem}>{medicationName}</Text>
+                <Text key={medicationName} style={styles.medicationListItem}>{medicationName}</Text>
             ))}
         </View>
     );
