@@ -64,12 +64,10 @@ export default function Sleep(): JSX.Element {
                 radioButtons = {radioButtons}
                 onPress = {onPressRadioButton}
             />
-
-                <View style={styles.sliderText}>
-                    <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
-                    <Text style={styles.text}>{sliderValue}</Text>
-                </View>
-
+            <View style={styles.sliderText}>
+                <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
+                <Text style={styles.text}>{sliderValue}</Text>
+            </View>
             <View style={styles.sliderView}>
                 <Slider
                     style={styles.slider}
