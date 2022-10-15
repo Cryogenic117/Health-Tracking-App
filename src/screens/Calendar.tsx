@@ -4,8 +4,8 @@ import { Calendar as MainCalendar, CalendarList, Agenda } from 'react-native-cal
 // import DropDownPicker from 'react-native-dropdown-picker'
 
 export default function Calendar(): JSX.Element {
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [open, setOpen] = useState(false)
+    const [value, setValue] = useState(null)
     const [items, setItems] = useState([
         {label: 'Week', value: 'week'},
         {label: 'Month', value: 'month'}
