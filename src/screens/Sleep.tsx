@@ -4,8 +4,7 @@ import Slider from '@react-native-community/slider'
 import { useState } from "react"
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
 
-const radioButtonsData: RadioButtonProps[] = [
-{
+const radioButtonsData: RadioButtonProps[] = [{
     id: 'btn1',
     label: "Very Little (3 hours or less)",
     value: "Very Little (3 hours or less)",
@@ -17,6 +16,7 @@ const radioButtonsData: RadioButtonProps[] = [
     label: "Some (4 to 5 hours)",
     value: "Some (4 to 5 hours)",
     size: 30,
+    containerStyle: {marginTop: 20},
     labelStyle: {color: '#FFC107', fontSize: 20, fontWeight: 'bold'}
 },   
 {
@@ -24,6 +24,7 @@ const radioButtonsData: RadioButtonProps[] = [
     label: "A Good Amount (6 to 7 hours)",
     value: "A Good Amount (6 to 7 hours)",
     size: 30,
+    containerStyle: {marginTop: 20},
     labelStyle: {color: '#43A047', fontSize: 20, fontWeight: 'bold'}
 },
 {
@@ -31,6 +32,7 @@ const radioButtonsData: RadioButtonProps[] = [
     label: "A lot (7 to 9 hours)",
     value: "A lot (7 to 9 hours)",
     size: 30,
+    containerStyle: {marginTop: 20},
     labelStyle: {color: '#1B5E20', fontSize: 20, fontWeight: 'bold'}
 },
 {
@@ -38,6 +40,7 @@ const radioButtonsData: RadioButtonProps[] = [
     label: "Excessive (Over 9 hours)",
     value: "Excessive (Over 9 hours)",
     size: 30,
+    containerStyle: {marginTop: 20},
     labelStyle: {color: '#FFC107', fontSize: 20, fontWeight: 'bold'}
 }]
 
@@ -61,6 +64,12 @@ export default function Sleep(): JSX.Element {
                 radioButtons = {radioButtons}
                 onPress = {onPressRadioButton}
             />
+
+                <View style={styles.sliderText}>
+                    <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
+                    <Text style={styles.text}>{sliderValue}</Text>
+                </View>
+
             <View style={styles.sliderView}>
                 <Slider
                     style={styles.slider}
@@ -73,10 +82,6 @@ export default function Sleep(): JSX.Element {
                     minimumTrackTintColor={"#828180"}
                     thumbTintColor={"#BEB1A4"}
                 />
-                <View style={styles.sliderText}>
-                    <Text style={styles.text}>How was your sleep quality (1-10): </Text>
-                    <Text style={styles.text}>{sliderValue}</Text>
-                </View>
             </View>
             <TouchableOpacity
                 style={styles.Button}
@@ -91,7 +96,8 @@ const styles = StyleSheet.create({
     //todo:AKEEN make a global stylesheet with sizing,text color,font,etc. - confer w/ team
     text: {
         color: 'black',
-        fontSize: 15
+        fontWeight: 'bold',
+        fontSize: 16
     },
     buttonText: {
       color: '#ffffff'
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
     blackBar: {
         backgroundColor: 'black',
         height: 2,
-        width: 225,
+        width: 225, 
         margin: 50
     },
     sleepScreenView: {
