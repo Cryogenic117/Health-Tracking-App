@@ -1,6 +1,7 @@
 import React from 'react'
 import { ScrollView, StatusBar, Text, View } from 'react-native'
 import SearchBar from "react-native-dynamic-search-bar"
+import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
 
 export default function Medication(): JSX.Element {
@@ -18,6 +19,7 @@ export default function Medication(): JSX.Element {
                     ))}
                 </ScrollView>
             </View>
+            <NewMedicationModal/>
         </View>
     )
 }
