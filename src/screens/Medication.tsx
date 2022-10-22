@@ -19,7 +19,6 @@ export default function Medication(): JSX.Element {
                     ))}
                 </ScrollView>
             </View>
-            <NewMedicationModal/>
         </View>
     )
 }

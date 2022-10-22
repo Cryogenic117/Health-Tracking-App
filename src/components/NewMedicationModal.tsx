@@ -1,141 +1,126 @@
-import React, { useState} from 'react'
-import { Text, View, StyleSheet, Button} from 'react-native'
+import React, { useState } from 'react'
+import { Button, StyleSheet, Text, View } from 'react-native'
+import BouncyCheckbox from "react-native-bouncy-checkbox"
 import Modal from "react-native-modal"
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import DateTimePickerModal from "react-native-modal-datetime-picker"
 import NumericInput from 'react-native-numeric-input'
 
 export default function NewMedicationModal(): JSX.Element {
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+    const [isModalVisibile, setModalVisibility] = useState(true)
+    const [selectedStartDate, setSelectedStartDate] = useState('')
+    const [selectedEndDate, setSelectedEndDate] = useState('')
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
+    const handleConfirmStartDate = (date) => {
+        setSelectedStartDate(date)
+        setDatePickerVisibility(false)
+    }
+    const handleConfirmEndDate = (date) => {
+        setSelectedEndDate(date)
+        setDatePickerVisibility(false)
+    }
 
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
+    const daysOfTheWeek: string[] = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+    ]
+    const mockSelectedMedication = 'Sample'
 
-  const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
-    hideDatePicker();
-  };
-
-  return (
+    return (
         <View>
-          <Modal isVisible={true}>
-            <View style={{ flex: 1, backgroundColor: 'white', padding: 20, borderRadius: 10}}>
-              <Text style={styles.text}>Selected Medication:</Text>
-              <Text style={styles.medicationName}>Sample</Text>
-              {/* TODO: Add the name of the selected medication. */}
-              <Text style={styles.text}>Start Date:</Text>
-              <View>
-                <Button title="Select Start Date" onPress={showDatePicker} />
-                <DateTimePickerModal
-                  isVisible={isDatePickerVisible}
-                  mode="date"
-                  onConfirm={handleConfirm}
-                  onCancel={hideDatePicker}
-                />
-              </View>
-              <Text style={styles.text}>End Date:</Text>
-              <View>
-                <Button title="Select End Date" onPress={showDatePicker} />
-                <DateTimePickerModal
-                  isVisible={isDatePickerVisible}
-                  mode="date"
-                  onConfirm={handleConfirm}
-                  onCancel={hideDatePicker}
-                />
-              </View>
-              {/* TODO: Add weekly checkbox options. */}
-              <Text style={styles.text}>Set Weekday Frequency:</Text>
-              <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Monday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Tuesday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Wednesday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Thursday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Friday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Saturday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-                            <BouncyCheckbox
-                  size={25}
-                  fillColor= '#5838B4'
-                  unfillColor="#FFFFFF"
-                  text="Sunday"
-                  iconStyle={{ borderColor: "white" }}
-                  innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
-                  textStyle={{ textDecorationLine: "none", fontFamily: "JosefinSans-Regular" }}
-                  onPress={(isChecked: boolean) => {}}
-              />
-              <Text style={styles.text}>How Often?</Text>
-              {/* TODO: Add options for frequency per day. */}
-              <NumericInput onChange={value => console.log(value)} />
-            </View>
-          </Modal>
+            <Modal isVisible={isModalVisibile}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.text}>Selected Medication:</Text>
+                    <Text style={styles.medicationName}>{mockSelectedMedication}</Text>
+                    <Text style={styles.text}>{`Start Date: ${selectedStartDate}`}</Text>
+                    <Button 
+                        title="Select Start Date"
+                        color='#5838B4'
+                        onPress={() => setDatePickerVisibility(true)}
+                    />
+                    <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="date"
+                        onConfirm={handleConfirmStartDate}
+                        onCancel={() => setDatePickerVisibility(false)}
+                    />
+                    <Text style={styles.text}>{`End Date: ${selectedEndDate}`}</Text>
+                    <Button 
+                        title="Select End Date"
+                        color='#5838B4'
+                        onPress={() => setDatePickerVisibility(true)}
+                    />
+                    <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="date"
+                        onConfirm={handleConfirmEndDate}
+                        onCancel={() => setDatePickerVisibility(false)}
+                    />
+                    <Text style={styles.text}>
+                        {`What days do you take ${mockSelectedMedication}?`}
+                    </Text>
+                    {daysOfTheWeek.map((day, index) => (
+                        <BouncyCheckbox
+                            key={index}
+                            size={25}
+                            fillColor= '#5838B4'
+                            unfillColor="#FFFFFF"
+                            text={day}
+                            iconStyle={{ borderColor: "white" }}
+                            innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
+                            textStyle={{ textDecorationLine: "none", color: 'black' }}
+                            onPress={() => {}}
+                        />
+                    ))}
+                    <Text style={styles.text}>
+                        {`How often do you take ${mockSelectedMedication} per day?`}
+                    </Text>
+                    <NumericInput onChange={() => {}} />
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <View style={styles.modalActionButton}>            
+                            <Button 
+                                title='Cancel'
+                                color='#5838B4'
+                                onPress={() => setModalVisibility(false)}
+                            />
+                        </View>
+                        <View style={styles.modalActionButton}>              
+                            <Button
+                                title='Save'
+                                color='#5838B4'
+                                onPress={() => setModalVisibility(false)}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1, 
+        backgroundColor: 'white', 
+        padding: 20, 
+        borderRadius: 10, 
+        justifyContent: 'space-between'
+    },
     text: {
         fontSize: 16
     },
     medicationName: {
-      textAlign: 'center',
-      fontSize: 24,
-      color: '#5838B4'
+        textAlign: 'center',
+        fontSize: 24,
+        color: '#5838B4',
+        fontWeight: 'bold'
+    },
+    modalActionButton: {
+        width: 150
     }
 })
