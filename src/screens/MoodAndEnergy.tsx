@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
         const [sliderValue, tempValue] = useState(0)
         const onPress = () => Alert.alert("Data Saved.")
 
-
         return(
             <View style={styles.container}>
                 <Text style={styles.header}>How is your mood?</Text>
