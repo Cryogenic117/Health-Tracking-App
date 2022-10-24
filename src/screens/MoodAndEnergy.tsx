@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import Slider from '@react-native-community/slider';
