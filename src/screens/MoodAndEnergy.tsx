@@ -36,6 +36,11 @@ export default function MoodAndEnergy(): JSX.Element {
                     onPress={emojiPress}>
                     <Text style={styles.buttonText}>😁</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.emojiButton}
+                    onPress={emojiPress}>
+                    <Text style={styles.buttonText}>⚡</Text>
+                </TouchableOpacity>
             </View>
             
             <Text style={styles.sliderText}>{"\n"}How much energy do you have?</Text>
@@ -100,13 +105,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#262626",
         padding: 10,
-        width: 38,
-        margin: 20,
+        width: 45,
+        margin: 10,
         borderRadius: 10,
         flexDirection: "row"
     },
     buttonText: {
-        color: '#ffffff'
+        color: '#ffffff',
+        fontSize:20
       },
     buttonStyle:{
         alignItems: 'flex-start',
