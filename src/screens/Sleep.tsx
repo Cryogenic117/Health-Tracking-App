@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { useState } from "react"
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from "moment";
 
 const radioButtonsData: RadioButtonProps[] = [{
     id: 'btn1',
@@ -44,16 +46,46 @@ const radioButtonsData: RadioButtonProps[] = [{
     labelStyle: {color: '#FFC107', fontSize: 20, fontWeight: 'bold'}
 }]
 
-// todo:AKEEN make sliderValue text input
-// todo:AKEEN send sliderValue to calendar screen on button press
-// todo:AKEEN add loggin info
+let selectedButton
+let data = []
 export default function Sleep(): JSX.Element {
-    const [sliderValue, tempValue] = useState(0)
-    const onPress = () => Alert.alert("Data Saved.")
+    const [sliderValue, tempValue] = useState(1)
+    const onPress1 = async () => {
+        data[0] = selectedButton
+        data[1] = sliderValue
+        if (data[0] != null && data[1] != null) {
+            try {
+                const key = moment().format("DD/MM/YYYY")
+                const entry = JSON.stringify(data)
+                await AsyncStorage.setItem(key, entry)
+            } catch (e) {
+                Alert.alert("There was an error saving")
+            }
+        }
+    }
+
+    const onPress2 = async () => {
+        const key = moment().format("DD/MM/YYYY")
+        try{
+            const val = await AsyncStorage.getItem(key)
+            console.log("key = "+key+" val = "+val)
+        }catch (e){
+            console.log(e)
+        }
+    }
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
     function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
     {
         setRadioButtons(radioButtonsArray)
+        radioButtonsArray.forEach(
+            function(button){
+                if(button.selected == true)
+                {
+                   selectedButton = button.id
+                   return selectedButton
+                }
+            }
+        )
     }
 
     return (
@@ -71,7 +103,7 @@ export default function Sleep(): JSX.Element {
             <View style={styles.sliderView}>
                 <Slider
                     style={styles.slider}
-                    minimumValue={0}
+                    minimumValue={1}
                     maximumValue={10}
                     onValueChange={(value)=>tempValue(value)}
                     step={1}
@@ -83,8 +115,13 @@ export default function Sleep(): JSX.Element {
             </View>
             <TouchableOpacity
                 style={styles.Button}
-                onPress={onPress}>
+                onPress={onPress1}>
                 <Text style={styles.buttonText}>Save Data</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.Button}
+                onPress={onPress2}>
+                <Text style={styles.buttonText}>Console Log Data</Text>
             </TouchableOpacity>
         </View>
     )
