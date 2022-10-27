@@ -1,80 +1,80 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent } from 'react-native'
 import Slider from '@react-native-community/slider'
 
+const emojis: string[] = ["😭", "😢", "😐", "🙂", "😁", "⚡"]
+
 export default function MoodAndEnergy(): JSX.Element {
-    const [sliderValue, tempValue] = useState(0)
-    const onPress = () => Alert.alert("Data Saved.")
-    const emojiPress = () => Alert.alert("Data Saved.")
+    const [isMoodSelected, setIsMoodSelected] = useState(false)
+    const [moodIntensity, setMoodIntensity] = useState(0)
+    const [energyIntensity, setEnergyIntensity] = useState(0)
 
     return(
         <View style={styles.container}>
-            <Text style={styles.header}>How do you feel?</Text>
+            <Text style={{fontSize: 25, fontWeight: 'bold'}}>How are you feeling today?</Text>
             <View style={styles.emojiContainer}>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>😭</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>😢</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>😐</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>🙂</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>😁</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.emojiButton}
-                    onPress={emojiPress}>
-                    <Text style={styles.buttonText}>⚡</Text>
-                </TouchableOpacity>
+                {emojis.map((emoji, emojiIndex) => (
+                    <TouchableOpacity key={emojiIndex} onPress={() =>
+                        setIsMoodSelected(getIsMoodSelected(emojiIndex))
+                    }>
+                        <Text style={{fontSize: 40, paddingHorizontal: 7}}>{emoji}</Text>
+                    </TouchableOpacity>
+                ))}
             </View>
-            
-            <Text style={styles.sliderText}>{"\n"}How much energy do you have?</Text>
-            <View style={styles.sliderView}>
+            <Text style={styles.sliderQuestion}>What is the intensity of this feeling?</Text>
+            {isMoodSelected &&
                 <Slider
                     style={styles.slider}
                     minimumValue={0}
                     maximumValue={10}
-                    onValueChange={(value)=>tempValue(value)}
+                    onValueChange={(value) => setMoodIntensity(value)}
                     step={1}
-                    value={sliderValue}
+                    value={moodIntensity}
                     maximumTrackTintColor={"#1f1f1e"}
-                    minimumTrackTintColor={"#828180"}
+                    minimumTrackTintColor={"#03fc3d"}
                     thumbTintColor={"#BEB1A4"}
                 />
-                <Text style={styles.text}>{sliderValue}</Text>
-            </View>
-            <View>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={onPress}>
-                    <Text style={styles.buttonText}>Save Data</Text>
-                </TouchableOpacity>
-            </View>
+            }
+            {!isMoodSelected &&
+                <Slider
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={10}
+                    onValueChange={(value) => setEnergyIntensity(value)}
+                    step={1}
+                    value={energyIntensity}
+                    maximumTrackTintColor={"#1f1f1e"}
+                    minimumTrackTintColor={"#5838B4"}
+                    thumbTintColor={"#BEB1A4"}
+                />
+            }
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => Alert.alert("Data Saved.")}>
+                <Text style={{color: '#ffffff', fontSize: 20}}>Save Data</Text>
+            </TouchableOpacity>
         </View>
     )
 }
 
+function getIsMoodSelected(emojiIndex: number) {
+    var lightningBoltEmojiSelected: boolean
+
+    if (emojiIndex != 5) {
+        lightningBoltEmojiSelected = false
+    } else {
+        lightningBoltEmojiSelected = true
+    }
+
+    return lightningBoltEmojiSelected == false
+}
+
 const styles = StyleSheet.create({
     container: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginTop:100,
-        padding: 20,
-        flexDirection: "column"
     },
     emojiContainer: {
         alignItems: 'center',
@@ -82,16 +82,10 @@ const styles = StyleSheet.create({
         padding: 20,
         flexDirection: "row",
     },
-    header:{
-        fontSize: 25,
-        padding: 20,
-        fontWeight: 'bold'
-    },
-    text: {
-        flexDirection: "column",
-        fontSize: 25,
-        fontWeight: 'bold'
-
+    sliderQuestion: {
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 16
     },
     button: {
         alignItems: "center",
@@ -100,36 +94,6 @@ const styles = StyleSheet.create({
         width: 125,
         margin: 20,
         borderRadius: 10
-    },
-    emojiButton: {
-        alignItems: "center",
-        backgroundColor: "#262626",
-        padding: 10,
-        width: 45,
-        margin: 10,
-        borderRadius: 10,
-        flexDirection: "row"
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontSize:20
-      },
-    buttonStyle:{
-        alignItems: 'flex-start',
-        padding: 20,
-        border: "10px",
-        paddingTop: 10,
-        flexDirection: "column"
-    },
-    sliderView: {
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    sliderText: {
-        flexDirection: "column",
-        fontSize: 25,
-        fontWeight: 'bold',
-        paddingBottom: 20
     },
     slider: {
         height: 25,
