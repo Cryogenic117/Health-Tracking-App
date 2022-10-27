@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent, StyleProp, TextStyle } from 'react-native'
 import Slider from '@react-native-community/slider'
 
 const emojis: string[] = ["😭", "😢", "😐", "🙂", "😁", "⚡"]
@@ -8,16 +8,18 @@ export default function MoodAndEnergy(): JSX.Element {
     const [isMoodSelected, setIsMoodSelected] = useState(false)
     const [moodIntensity, setMoodIntensity] = useState(0)
     const [energyIntensity, setEnergyIntensity] = useState(0)
+    const [selectedEmojiIndex, setSelectedEmojiIndex] = useState(-1)
 
     return(
         <View style={styles.container}>
             <Text style={{fontSize: 25, fontWeight: 'bold'}}>How are you feeling today?</Text>
             <View style={styles.emojiContainer}>
                 {emojis.map((emoji, emojiIndex) => (
-                    <TouchableOpacity key={emojiIndex} onPress={() =>
+                    <TouchableOpacity key={emojiIndex} onPress={() => {
                         setIsMoodSelected(getIsMoodSelected(emojiIndex))
-                    }>
-                        <Text style={{fontSize: 40, paddingHorizontal: 7}}>{emoji}</Text>
+                        setSelectedEmojiIndex(emojiIndex)
+                    }}>
+                        <Text style={getEmojiStyle(emojiIndex, selectedEmojiIndex)}>{emoji}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -69,6 +71,13 @@ function getIsMoodSelected(emojiIndex: number) {
     return lightningBoltEmojiSelected == false
 }
 
+function getEmojiStyle(emojiIndex: number, selectedEmojiIndex: number): StyleProp<TextStyle> {
+    if (emojiIndex == selectedEmojiIndex) {
+        return styles.selectedEmoji
+    }
+    return styles.unselectedEmoji
+}
+
 const styles = StyleSheet.create({
     container: {
         height: '100%',
@@ -81,6 +90,21 @@ const styles = StyleSheet.create({
         marginTop:5,
         padding: 20,
         flexDirection: "row",
+    },
+    unselectedEmoji: {
+        fontSize: 40, 
+        paddingHorizontal: 7,
+        textAlign: 'center'
+    },
+    selectedEmoji: {
+        fontSize: 40, 
+        paddingHorizontal: 7,
+        borderWidth: 2,
+        borderColor: '#5838B4',
+        borderRadius: 10,
+        textAlign: 'center',
+        textShadowColor: '#5838B4',
+        textShadowRadius: 20
     },
     sliderQuestion: {
         color: 'black',
