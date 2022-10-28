@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: 260,
-        paddingTop: 20
+        paddingTop: 22
     },
     slider: {
         height: 25,
