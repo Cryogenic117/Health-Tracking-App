@@ -15,6 +15,7 @@ export default function NotesButton(): JSX.Element {
                     <TextInput 
                         style = {styles.noteInput}
                         multiline = {true}
+                        selectionColor = {'#5838B4'}
                     />
                     <View style = {styles.buttons}>
                         <View style = {styles.eachButton}>
