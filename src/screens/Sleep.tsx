@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { useState } from "react"
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
+import NotesButton from '../components/NotesButton'
 
 const radioButtonsData: RadioButtonProps[] = [{
     id: 'btn1',
@@ -64,6 +65,7 @@ export default function Sleep(): JSX.Element {
                 radioButtons = {radioButtons}
                 onPress = {onPressRadioButton}
             />
+            <NotesButton />
             <View style={styles.sliderText}>
                 <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
                 <Text style={styles.text}>{sliderValue}</Text>
@@ -127,7 +129,8 @@ const styles = StyleSheet.create({
     sliderText: {
         flexDirection: "row",
         justifyContent: "space-between",
-        width: 260
+        width: 260,
+        paddingTop: 22
     },
     slider: {
         height: 25,
