@@ -1,32 +1,33 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import { ScrollView, StatusBar, Text, View } from 'react-native'
 import SearchBar from "react-native-dynamic-search-bar"
 import NotesButton from '../components/NotesButton'
 
 export default function Medication(): JSX.Element {
-    const [isLoading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
-    const getMedications = async () => {
-        try {
-            const response = await fetch('https://reactnative.dev/movies.json');
-            const json = await response.json();
-            setData(json.movies);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+    const searchRx = (search) => {
+        fetch(`https://rxnav.nlm.nih.gov/REST/rxcui.json?name=${search}&search=0`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.idGroup.rxnormId) {
+                    let rxcui = data.idGroup.rxnormId[0]
+                    return fetch(`https://rxnav.nlm.nih.gov/REST/rxcui/${rxcui}/allrelated.json`)
+                        .then((response) => response.json())
+                        .then((data) => console.log(data.allRelatedGroup.conceptGroup[0].conceptProperties[0].name))
+                    }
+            })
     }
-    console.log(data)
+
+    searchRx("advil")
+
     return (
         <View style={{marginTop: StatusBar.currentHeight, marginBottom: 200}}>
             <SearchBar placeholder='Add a Medication'/>
             <View style={{paddingHorizontal: 20}}>
                 <Text style={{fontSize: 30, paddingVertical: 10}}>Your Medications</Text>
                 <ScrollView>
-                    {data.map((medName, index) => (
+                    {mockData.map((medName, index) => (
                         <View key={index} style={{paddingVertical: 10}}>
-                            <Text key={medName.title} style={{fontSize: 20, paddingBottom: 5}}>{medName.title}</Text>
+                            <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
                             <NotesButton/>
                         </View>
                     ))}
