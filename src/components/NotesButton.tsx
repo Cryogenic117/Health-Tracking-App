@@ -3,7 +3,6 @@ import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput} from 'react
 import Modal from 'react-native-modal'
 
 export default function NotesButton(): JSX.Element {
-
     const [isModalVisible, setModalVisibility] = useState(false)
 
     return (
