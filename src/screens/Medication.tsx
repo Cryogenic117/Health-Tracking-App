@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { ScrollView, StatusBar, Text, View } from 'react-native'
+import { ScrollView, StatusBar, Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import SearchBar from "react-native-dynamic-search-bar"
 import NotesButton from '../components/NotesButton'
 
 export default function Medication(): JSX.Element {
+    const [searchResults, setSearchResults] = useState([]) 
+    
     const searchRx = (searchTerm: string) => {
         fetch(`https://rxnav.nlm.nih.gov/REST/RxTerms/allconcepts.json`)
             .then((response) => response.json())
@@ -31,6 +33,7 @@ export default function Medication(): JSX.Element {
                         .then((response) => response.json())
                         .then((data) => console.log(data.displayGroup.displayName))
                 })
+                setSearchResults(searchResultDisplayNames)
             })
     }
 
@@ -38,7 +41,7 @@ export default function Medication(): JSX.Element {
 
     return (
         <View style={{marginTop: StatusBar.currentHeight, marginBottom: 200}}>
-            <SearchBar placeholder='Add a Medication'/>
+            {/* <SearchBar placeholder='Add a Medication'/>
             <View style={{paddingHorizontal: 20}}>
                 <Text style={{fontSize: 30, paddingVertical: 10}}>Your Medications</Text>
                 <ScrollView>
@@ -49,11 +52,31 @@ export default function Medication(): JSX.Element {
                         </View>
                     ))}
                 </ScrollView>
-            </View>
+            </View> */}
+            <ScrollView>
+                {userMedications.map((searchResult,index) => (
+                    <TouchableOpacity key = {index} style = {styles.searchResultCard} onPress = {() => {}}>
+                        <Text style = {styles.searchResultCardText}>
+                            {searchResult}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     )
 }
-
+const styles = StyleSheet.create({
+    searchResultCard: {
+        borderRadius: 10,
+        borderWidth: 2,
+        height: 50,
+        margin: 10,
+    },
+    searchResultCardText: {
+        textAlign: 'center',
+        fontSize: 24
+    }
+})
 const userMedications: string[] = [
     "Diazepam (Valium)",
     "Metformin (Riomet)",
