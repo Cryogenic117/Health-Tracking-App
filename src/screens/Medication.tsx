@@ -4,20 +4,37 @@ import SearchBar from "react-native-dynamic-search-bar"
 import NotesButton from '../components/NotesButton'
 
 export default function Medication(): JSX.Element {
-    const searchRx = (search) => {
-        fetch(`https://rxnav.nlm.nih.gov/REST/rxcui.json?name=${search}&search=0`)
+    const searchRx = (searchTerm: string) => {
+        fetch(`https://rxnav.nlm.nih.gov/REST/RxTerms/allconcepts.json`)
             .then((response) => response.json())
-            .then((data) => {
-                if (data.idGroup.rxnormId) {
-                    let rxcui = data.idGroup.rxnormId[0]
-                    return fetch(`https://rxnav.nlm.nih.gov/REST/rxcui/${rxcui}/allrelated.json`)
-                        .then((response) => response.json())
-                        .then((data) => console.log(data.allRelatedGroup.conceptGroup[0].conceptProperties[0].name))
+            .then((data) => data.minConceptGroup.minConcept)
+            .then((apiResults) => {
+                let searchResults = []
+                apiResults.forEach((result) => {
+                    if (result.fullName.includes(searchTerm)) {
+                        searchResults.push(result)
                     }
+                })
+                return searchResults
+            })
+            .then((searchResults) => {
+                let searchResultIDs = []
+                searchResults.forEach((searchRuslt) => {
+                    searchResultIDs.push(searchRuslt.rxcui)
+                })
+                return searchResultIDs
+            })
+            .then((searchResultIDs) => {                
+                let searchResultDisplayNames = []
+                searchResultIDs.forEach((ID) => {
+                    fetch(`https://rxnav.nlm.nih.gov/REST/RxTerms/rxcui/${ID}/name.json`)
+                        .then((response) => response.json())
+                        .then((data) => console.log(data.displayGroup.displayName))
+                })
             })
     }
 
-    searchRx("advil")
+    searchRx("metformin")
 
     return (
         <View style={{marginTop: StatusBar.currentHeight, marginBottom: 200}}>
@@ -25,7 +42,7 @@ export default function Medication(): JSX.Element {
             <View style={{paddingHorizontal: 20}}>
                 <Text style={{fontSize: 30, paddingVertical: 10}}>Your Medications</Text>
                 <ScrollView>
-                    {mockData.map((medName, index) => (
+                    {userMedications.map((medName, index) => (
                         <View key={index} style={{paddingVertical: 10}}>
                             <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
                             <NotesButton/>
@@ -37,7 +54,7 @@ export default function Medication(): JSX.Element {
     )
 }
 
-const mockData: string[] = [
+const userMedications: string[] = [
     "Diazepam (Valium)",
     "Metformin (Riomet)",
     "Mutli-Vitamins",
