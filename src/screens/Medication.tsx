@@ -19,8 +19,8 @@ export default function Medication(): JSX.Element {
             })
             .then((searchResults) => {
                 let searchResultIDs = []
-                searchResults.forEach((searchRuslt) => {
-                    searchResultIDs.push(searchRuslt.rxcui)
+                searchResults.forEach((searchResult) => {
+                    searchResultIDs.push(searchResult.rxcui)
                 })
                 return searchResultIDs
             })
@@ -34,7 +34,7 @@ export default function Medication(): JSX.Element {
             })
     }
 
-    searchRx("metformin")
+    searchRx("diazepam")
 
     return (
         <View style={{marginTop: StatusBar.currentHeight, marginBottom: 200}}>
