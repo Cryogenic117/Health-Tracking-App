@@ -50,27 +50,22 @@ let selectedButton
 let data = []
 export default function Sleep(): JSX.Element {
     const [sliderValue, tempValue] = useState(1)
-    const onPress1 = async () => {
+    const onPress = async () => {
         data[0] = selectedButton
         data[1] = sliderValue
+        console.log("Sleep Screen: Attempting to save data "+data[0]+" "+data[1])
         if (data[0] != null && data[1] != null) {
             try {
                 const key = moment().format("DD/MM/YYYY")
                 const entry = JSON.stringify(data)
+                console.log("Sleep Screen: Setting key, value as "+key+" "+entry)
                 await AsyncStorage.setItem(key, entry)
+                console.log("Sleep Screen: Save Successful")
+                Alert.alert("Data successfully saved for "+key)
             } catch (e) {
                 Alert.alert("There was an error saving")
+                console.log("Sleep Screen: Save failed - error: "+e)
             }
-        }
-    }
-
-    const onPress2 = async () => {
-        const key = moment().format("DD/MM/YYYY")
-        try{
-            const val = await AsyncStorage.getItem(key)
-            console.log("key = "+key+" val = "+val)
-        }catch (e){
-            console.log(e)
         }
     }
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
@@ -115,13 +110,8 @@ export default function Sleep(): JSX.Element {
             </View>
             <TouchableOpacity
                 style={styles.Button}
-                onPress={onPress1}>
+                onPress={onPress}>
                 <Text style={styles.buttonText}>Save Data</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.Button}
-                onPress={onPress2}>
-                <Text style={styles.buttonText}>Console Log Data</Text>
             </TouchableOpacity>
         </View>
     )
