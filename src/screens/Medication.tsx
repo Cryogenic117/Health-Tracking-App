@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ScrollView, StatusBar, ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import { ScrollView, SafeAreaView, Image, StatusBar, ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
 
@@ -10,7 +10,7 @@ export default function Medication(): JSX.Element {
     const [isSearchActive, setSearchActive] = useState(false)
     const [selectedMedication, setSelectedMedication] = useState("")
     const [showModal, setShowModal] = useState(false)
-    const [refreshSearchList, setRefreshSearchList,] = useState(false)
+    const [userMedications, setUserMedications] = useState<string[]>([])
 
     function search() {
         const currentQuery = currentText
@@ -35,37 +35,80 @@ export default function Medication(): JSX.Element {
     function get_items(data){
         return data.results.map((item) => {
             return(
-                <View style={styles.item}key={item.id}>
-                    <View style={{flex:7}}>
-                        <Text style={styles.drugName}>
-                            {item.openfda.brand_name[0].charAt(0).toUpperCase()+item.openfda.brand_name[0].substr(1).toLowerCase()}
-                        </Text>
-                        <Text style={styles.drugInfo}>
-                            Form: {item.openfda.route[0].charAt(0).toUpperCase()+item.openfda.route[0].substr(1).toLowerCase()+"\n"}
-                            Brands: {item.openfda.generic_name[0].charAt(0).toUpperCase()+item.openfda.generic_name[0].substr(1).toLowerCase()}
-                           
-                        </Text>
-                        
+                <TouchableOpacity key={item.id} onPress={() => 
+                resultPressed(item.openfda.brand_name[0].charAt(0).toUpperCase()+item.openfda.brand_name[0].substr(1).toLowerCase())}
+                >
+                    <View style={styles.item}>
+                            <Text style={styles.drugName}>
+                                {item.openfda.brand_name[0].charAt(0).toUpperCase()+item.openfda.brand_name[0].substr(1).toLowerCase()}
+                            </Text>
+                            <Text style={styles.drugInfo}>
+                                Generic: {item.openfda.generic_name[0]}
+                            </Text>
                     </View>
-                </View>
+                </TouchableOpacity>
             )
         })
     }
+    function resultPressed(medName) {
+        setSelectedMedication(medName)
+        setResults(null)
+        setShowModal(true)
+    }
+    const medicationModalCancelToggle = () => {
+        setShowModal(!showModal)
+    }
 
-    return (
-            <View style={{flex:1}}>
-				<View style={{flex:1, margin: "auto", alignContent:"center", flexDirection:"row"}}>
-					<TextInput onChangeText={text => setCurrentText(text)} autoCorrect={false}
-                        placeholder="Enter a drug" onSubmitEditing={()=>search()}
-						editable={textEditable}
-						style={{flex:9, marginTop: 30, alignItems:"center", textAlign: "center", backgroundColor: "white", alignContent:"center"}}/>
-				</View>
+    const medicationModalSaveToggle = () => {
+        userMedications.push(selectedMedication)
+        setShowModal(!showModal)
+        setSearchActive(false)
+    }
+    function searchEdit(text){
+        setCurrentText(text)
+    }
+    function cancelButtonPressed() {
+        setSearchActive(false)
+        setResults(null)
+    }
+    return(
+            <SafeAreaView style={{flex:1}}>
+				<SafeAreaView style={{flex:1, margin: "auto", alignSelf: 'center', alignContent:"center", flexDirection:"row"}}>
+					<TextInput onChangeText={text => searchEdit(text)} 
+                        onPressIn={() => setSearchActive(true)}
+                        autoCorrect={false}
+                        onSubmitEditing={()=>search()}
+						editable={isSearchActive}
+                        placeholder= "Add a medication"
+						style={styles.search}/>
+                    {isSearchActive &&
+                        <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>C A N C E L</Text>
+                    }
+				</SafeAreaView>
 				<View style={{flex:6}}>
+                {!isSearchActive &&
+                <View style={{flex:1}}>
+                    <Text style={{alignSelf: 'center', fontSize: 30}}>Your Medications</Text>
+                    <ScrollView style={{flex: 5}}>
+                        {userMedications.map((medName, index) => (
+                            <View key={index} style={{paddingVertical: 10, paddingLeft: 15}}>
+                                <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
+                                <NotesButton/>
+                            </View>
+                        ))}
+                    </ScrollView>
+                </View>}
 					<ScrollView style={{flex:8}}>
-						{results}
+                            {results}
 					</ScrollView>
 				</View>
-			</View>
+                <NewMedicationModal 
+                medicationName={selectedMedication} 
+                cancelToggle={medicationModalCancelToggle}
+                saveToggle={medicationModalSaveToggle}
+                isOpen={showModal}
+            />
+			</SafeAreaView>
     )
 }
 
@@ -79,8 +122,28 @@ const styles = StyleSheet.create({
     },
     item: {
         flex: 3,
-        borderBottomColor: "grey",
-        borderBottomWidth: 2,
-        padding: 25
+        borderBottomColor: "#767676",
+        borderBottomWidth: .5,
+        padding: 15
+    },
+    search: {
+        maxHeight: 50, 
+        minHeight: 50, 
+        maxWidth: '90%', 
+        flex: 8, 
+        textAlign: "center", 
+        backgroundColor: "white", 
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#d3d3d3',
+    },
+    cancel: {
+        paddingTop: 12.5,
+        maxHeight: 50, 
+        minHeight: 50, 
+        maxWidth: '90%', 
+        flex: 2, 
+        textAlign: "center",
+        color: 'black',
     }
 })
