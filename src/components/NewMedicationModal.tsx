@@ -84,14 +84,14 @@ export default function NewMedicationModal(props): JSX.Element {
                             <Button 
                                 title='Cancel'
                                 color='#5838B4'
-                                onPress={props.toggle}
+                                onPress={props.cancelToggle}
                             />
                         </View>
                         <View style={styles.modalActionButton}>              
                             <Button
                                 title='Save'
                                 color='#5838B4'
-                                onPress={props.toggle}
+                                onPress={props.saveToggle}
                             />
                         </View>
                     </View>
