@@ -69,8 +69,7 @@ export default function Sleep(): JSX.Element {
         }
     }
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
-    function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
-    {
+    function onPressRadioButton(radioButtonsArray: RadioButtonProps[]) {
         setRadioButtons(radioButtonsArray)
         radioButtonsArray.forEach(
             function(button){
