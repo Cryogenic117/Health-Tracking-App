@@ -53,7 +53,7 @@ export default function Sleep(): JSX.Element {
     const onPress = async () => {
         data[0] = selectedButton
         data[1] = sliderValue
-        console.log("Sleep Screen: Attempting to save data "+data[0]+" "+data[1])
+        console.log("Sleep Screen: Attempting to save data " + data[0] + " " + data[1])
         if (data[0] != null && data[1] != null) {
             try {
                 const key = moment().format("DD/MM/YYYY")
