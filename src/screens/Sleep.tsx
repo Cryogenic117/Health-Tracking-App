@@ -58,7 +58,7 @@ export default function Sleep(): JSX.Element {
             try {
                 const key = moment().format("DD/MM/YYYY")
                 const entry = JSON.stringify(data)
-                console.log("Sleep Screen: Setting key, value as "+key+" "+entry)
+                console.log("Sleep Screen: Setting key, value as " + key + " " + entry)
                 await AsyncStorage.setItem(key, entry)
                 console.log("Sleep Screen: Save Successful")
                 Alert.alert("Data successfully saved for "+key)
