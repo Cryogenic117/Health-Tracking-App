@@ -3,16 +3,16 @@ import { StatusBar, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { Agenda, CalendarProvider } from 'react-native-calendars'
 
 export default function Calendar(): JSX.Element {
-    var date = new Date();
-    const initialDate = date.toISOString().substr(0,10)
-	var currentDateSelected = initialDate
+    var date = new Date()
+    const initialDate = date.toISOString().substring(0,10)
+    const [currentDateSelected,setCurrentDateSelected] = useState(initialDate)
     return (
         <View style={{marginTop: StatusBar.currentHeight}}>
             <View style={{height: '100%'}}>
-                <CalendarProvider date={initialDate}>             
+                <CalendarProvider date={currentDateSelected}>             
                 <Agenda renderList={() => DailyData(currentDateSelected)}
                     onDayPress={day => {   
-                        currentDateSelected = day.dateString  
+                        setCurrentDateSelected(day.dateString)
                     }}
                     hideExtraDays={true}
                     theme={{
@@ -31,14 +31,11 @@ export default function Calendar(): JSX.Element {
 }
 
 function DailyData(day): JSX.Element {
-
     return (
         <View style={{padding: 10}}>
             <Text style={{textAlign: 'center', fontSize: 20}}>Daily Data</Text>
             <View style={styles.lineSeperator}/>
                 <ScrollView>
-                    {//Display data for Date
-                    }
                 </ScrollView>
         </View>
     )
