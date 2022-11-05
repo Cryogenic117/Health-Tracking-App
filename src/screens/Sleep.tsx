@@ -73,8 +73,7 @@ export default function Sleep(): JSX.Element {
         setRadioButtons(radioButtonsArray)
         radioButtonsArray.forEach(
             function (button) {
-                if(button.selected == true)
-                {
+                if (button.selected == true) {
                    selectedButton = button.id
                    return selectedButton
                 }
