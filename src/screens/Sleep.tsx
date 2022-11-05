@@ -61,7 +61,7 @@ export default function Sleep(): JSX.Element {
                 console.log("Sleep Screen: Setting key, value as " + key + " " + entry)
                 await AsyncStorage.setItem(key, entry)
                 console.log("Sleep Screen: Save Successful")
-                Alert.alert("Data successfully saved for "+key)
+                Alert.alert("Data successfully saved for " + key)
             } catch (e) {
                 Alert.alert("There was an error saving")
                 console.log("Sleep Screen: Save failed - error: "+e)
