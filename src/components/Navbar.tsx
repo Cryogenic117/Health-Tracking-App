@@ -28,7 +28,6 @@ const navBarScreenOptions = {
     tabBarStyle: {
         backgroundColor: '#000000'
     }
-    
 }
 
 export default function Navbar(): JSX.Element {
