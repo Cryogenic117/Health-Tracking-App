@@ -23,6 +23,7 @@ const sleepTabOptions = {
 const navBarScreenOptions = {
     headerShown: false,
     tabBarShowLabel: false,
+    tabBarHideOnKeyboard: true,
     tabBarActiveBackgroundColor: '#5838B4',
     tabBarStyle: {
         backgroundColor: '#000000'
