@@ -1,5 +1,5 @@
 import React, {useState} from 'react' 
-import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback} from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput, KeyboardAvoidingView, ScrollView} from 'react-native'
 import Modal from 'react-native-modal'
 
 export default function NotesButton(): JSX.Element {
