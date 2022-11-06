@@ -3,9 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { useState } from "react"
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from "moment";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from "moment"
 import NotesButton from '../components/NotesButton'
 
 const radioButtonsData: RadioButtonProps[] = [{
