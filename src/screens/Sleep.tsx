@@ -67,8 +67,7 @@ export default function Sleep(): JSX.Element {
             />
             <NotesButton />
             <View style={styles.sliderText}>
-                <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
-                <Text style={styles.text}>{sliderValue}</Text>
+                <Text style={styles.text}>How was your sleep quality? </Text>
             </View>
             <View style={styles.sliderView}>
                 <Slider
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
     text: {
         color: 'black',
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 20
     },
     buttonText: {
       color: '#ffffff'
