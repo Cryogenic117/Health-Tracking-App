@@ -24,7 +24,7 @@ export default function MoodAndEnergy(): JSX.Element {
                     </TouchableOpacity>
                 ))}
             </View>
-            <NotesButton/>
+            
             <Text style={styles.sliderQuestion}>What is the intensity of this feeling?</Text>
             {isMoodSelected &&
                 <Slider
@@ -52,6 +52,7 @@ export default function MoodAndEnergy(): JSX.Element {
                     thumbTintColor={"#BEB1A4"}
                 />
             }
+            <NotesButton/>
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => Alert.alert("Data Saved.")}>
