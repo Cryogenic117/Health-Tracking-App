@@ -24,7 +24,6 @@ export default function MoodAndEnergy(): JSX.Element {
                     </TouchableOpacity>
                 ))}
             </View>
-            
             <Text style={styles.sliderQuestion}>What is the intensity of this feeling?</Text>
             {isMoodSelected &&
                 <Slider
