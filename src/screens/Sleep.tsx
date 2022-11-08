@@ -67,7 +67,7 @@ export default function Sleep(): JSX.Element {
             />
             <NotesButton />
             <View style={styles.sliderText}>
-                <Text style={styles.text}>How was your sleep quality? </Text>
+                <Text style={styles.text}>How was your sleep quality?</Text>
             </View>
             <View style={styles.sliderView}>
                 <Slider
