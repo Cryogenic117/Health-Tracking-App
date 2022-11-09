@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { StatusBar, StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StatusBar, StyleSheet, Text, View, ScrollView, Image} from 'react-native'
 import { Agenda, CalendarProvider } from 'react-native-calendars'
 
 export default function Calendar(): JSX.Element {
@@ -31,21 +31,50 @@ export default function Calendar(): JSX.Element {
 }
 
 function DailyData(day): JSX.Element {
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+    var dayText
+    if(day.substring(8,9) != "0") {
+        dayText = day.substring(8,10)
+    }
+    else dayText = day.substring(9,10)
+    var dateText = monthNames[day.substring(5,7)-1] + " " + dayText + ", " + day.substring(0,4)
+
     return (
-        <View style={{padding: 10}}>
-            <Text style={{textAlign: 'center', fontSize: 20}}>Daily Data</Text>
-            <View style={styles.lineSeperator}/>
+        <View style={{backgroundColor:'black', flex: 1, borderBottomColor: 'white', borderBottomWidth: 1,}}>
+            <Text style={{backgroundColor:'black',padding: 10,textAlign: 'center', fontSize: 32, color: 'white'}}>{dateText}</Text>
                 <ScrollView>
+                    <View>
+                        <View style={{backgroundColor:'#5838B4', flexDirection: 'row'}}>
+                            <Image style={{width: 30, height: 30}}source={require('../../assets/SleepNavigationIcon.png')}/>
+                            <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold',color: 'white'}}>Sleep</Text>
+                        </View>
+                        <View style={{paddingTop: 10}}>
+                            <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>Amount: 3-4 Hours{"\n"}Quality: 4/10</Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View style={{backgroundColor:'#5838B4', flexDirection: 'row'}}>
+                            <Image style={{width: 30, height: 30}}source={require('../../assets/PillNavigationIcon.png')}/>
+                            <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold',color: 'white'}}>Medications</Text>
+                        </View>
+                        <View style={{paddingTop: 10}}>
+                            <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>Take Metformin 1 time(s) today{"\n"}Take Diazepam 2 times(s) today</Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View style={{backgroundColor:'#5838B4', flexDirection: 'row'}}>
+                            <Image style={{width: 30, height: 30}}source={require('../../assets/MoodNavigationIcon.png')}/>
+                            <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold',color: 'white'}}>Mood/Energy</Text>
+                        </View>
+                        <View style={{paddingTop: 10}}>
+                            <Text style={{paddingLeft: 45, fontSize: 20, fontWeight: 'bold',color: '#5838B4', textDecorationLine: 'underline'}}>4:59:</Text>
+                            <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>Mood: Sad{"\n"}Energy: 1/10</Text>
+                            <Text style={{paddingLeft: 45, fontSize: 20, fontWeight: 'bold',color: '#5838B4', textDecorationLine: 'underline'}}>13:32:</Text>
+                            <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>Mood: Happy{"\n"}Energy: 6/10</Text>
+                        </View>
+                    </View>
                 </ScrollView>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    lineSeperator: {
-        borderBottomColor: "black", 
-        borderBottomWidth: 1, 
-        width: '100%',
-        paddingTop: 10
-    }
-})
