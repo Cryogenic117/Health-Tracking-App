@@ -1,7 +1,6 @@
-interface Medication {
+interface MedicationModel {
     name: string
-    startDate: string
-    endDate: string
+    dateRange: string[]
     weeklyFrequency: boolean[]
     dailyDoses: number
     notes: string

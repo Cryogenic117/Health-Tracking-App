@@ -43,14 +43,14 @@ export default function Medication(): JSX.Element {
         setShowModal(!showModal)
     }
 
-    const medicationModalSaveToggle = (medication: Medication) => {
+    const medicationModalSaveToggle = (medication: MedicationModel) => {
         userMedications.push(selectedMedication)
         setShowModal(!showModal)
         setSearchActive(false)
         storeMedicationData(medication)
     }
 
-    const storeMedicationData = async (medication: Medication) => {
+    const storeMedicationData = async (medication: MedicationModel) => {
         const key: number = Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1);
         try {
             const jsonValue = JSON.stringify(medication)

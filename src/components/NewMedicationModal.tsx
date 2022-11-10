@@ -6,25 +6,25 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import NumericInput from 'react-native-numeric-input'
 
 export default function NewMedicationModal(props): JSX.Element {
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+    const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false)
+    const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false)
     const [selectedStartDate, setSelectedStartDate] = useState('')
     const [selectedEndDate, setSelectedEndDate] = useState('')
 
     const handleConfirmStartDate = (date) => {
         setSelectedStartDate(date)
-        setDatePickerVisibility(false)
+        setStartDatePickerVisibility(false)
     }
 
     const handleConfirmEndDate = (date) => {
         setSelectedEndDate(date)
-        setDatePickerVisibility(false)
+        setEndDatePickerVisibility(false)
     }
 
     const onSavePress = () => {
-        const newMedication: Medication = {
+        const newMedication: MedicationModel = {
             name: props.medicationName,
-            startDate: selectedStartDate,
-            endDate: selectedEndDate,
+            dateRange: [selectedStartDate, selectedEndDate],
             weeklyFrequency: tempWeeklyFrequency,
             dailyDoses: tempDailyDoses,
             notes: ''
@@ -55,25 +55,25 @@ export default function NewMedicationModal(props): JSX.Element {
                     <Button 
                         title="Select Start Date"
                         color='#5838B4'
-                        onPress={() => setDatePickerVisibility(true)}
+                        onPress={() => setStartDatePickerVisibility(true)}
                     />
                     <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                        isVisible={isStartDatePickerVisible}
                         mode="date"
                         onConfirm={handleConfirmStartDate}
-                        onCancel={() => setDatePickerVisibility(false)}
+                        onCancel={() => setStartDatePickerVisibility(false)}
                     />
                     <Text style={styles.text}>{`End Date: ${selectedEndDate}`}</Text>
                     <Button 
                         title="Select End Date"
                         color='#5838B4'
-                        onPress={() => setDatePickerVisibility(true)}
+                        onPress={() => setEndDatePickerVisibility(true)}
                     />
                     <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                        isVisible={isEndDatePickerVisible}
                         mode="date"
                         onConfirm={handleConfirmEndDate}
-                        onCancel={() => setDatePickerVisibility(false)}
+                        onCancel={() => setEndDatePickerVisibility(false)}
                     />
                     <Text style={styles.text}>
                         {`What days do you take ${props.medicationName}?`}
