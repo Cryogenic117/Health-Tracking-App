@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { useState } from "react"
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from "moment"
 import NotesButton from '../components/NotesButton'
 
 const radioButtonsData: RadioButtonProps[] = [{
@@ -45,16 +47,39 @@ const radioButtonsData: RadioButtonProps[] = [{
     labelStyle: {color: '#EDB100', fontSize: 20, fontWeight: 'bold'}
 }]
 
-// todo:AKEEN make sliderValue text input
-// todo:AKEEN send sliderValue to calendar screen on button press
-// todo:AKEEN add loggin info
+let selectedButton
+let data = []
 export default function Sleep(): JSX.Element {
-    const [sliderValue, tempValue] = useState(0)
-    const onPress = () => Alert.alert("Data Saved.")
+    const [sliderValue, tempValue] = useState(1)
+    const onPress = async () => {
+        data[0] = selectedButton
+        data[1] = sliderValue
+        console.log("Sleep Screen: Attempting to save data " + data[0] + " " + data[1])
+        if (data[0] != null && data[1] != null) {
+            try {
+                const key = moment().format("DD/MM/YYYY")
+                const entry = JSON.stringify(data)
+                console.log("Sleep Screen: Setting key, value as " + key + " " + entry)
+                await AsyncStorage.setItem(key, entry)
+                console.log("Sleep Screen: Save Successful")
+                Alert.alert("Data successfully saved for " + key)
+            } catch (e) {
+                Alert.alert("There was an error saving")
+                console.log("Sleep Screen: Save failed - error: "+e)
+            }
+        }
+    }
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
-    function onPressRadioButton(radioButtonsArray: RadioButtonProps[])
-    {
+    function onPressRadioButton(radioButtonsArray: RadioButtonProps[]) {
         setRadioButtons(radioButtonsArray)
+        radioButtonsArray.forEach(
+            function (button) {
+                if (button.selected == true) {
+                   selectedButton = button.id
+                   return selectedButton
+                }
+            }
+        )
     }
 
     return (
@@ -67,13 +92,12 @@ export default function Sleep(): JSX.Element {
             />
             <NotesButton />
             <View style={styles.sliderText}>
-                <Text style={styles.text}>How was your sleep quality? (1-10): </Text>
-                <Text style={styles.text}>{sliderValue}</Text>
+                <Text style={styles.text}>How was your sleep quality?</Text>
             </View>
             <View style={styles.sliderView}>
                 <Slider
                     style={styles.slider}
-                    minimumValue={0}
+                    minimumValue={1}
                     maximumValue={10}
                     onValueChange={(value)=>tempValue(value)}
                     step={1}
@@ -97,7 +121,7 @@ const styles = StyleSheet.create({
     text: {
         color: 'black',
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 20
     },
     buttonText: {
       color: '#ffffff'

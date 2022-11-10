@@ -5,9 +5,8 @@ import Modal from "react-native-modal"
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 import NumericInput from 'react-native-numeric-input'
 
-export default function NewMedicationModal(): JSX.Element {
+export default function NewMedicationModal(props): JSX.Element {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
-    const [isModalVisibile, setModalVisibility] = useState(true)
     const [selectedStartDate, setSelectedStartDate] = useState('')
     const [selectedEndDate, setSelectedEndDate] = useState('')
 
@@ -29,14 +28,13 @@ export default function NewMedicationModal(): JSX.Element {
         'Saturday',
         'Sunday'
     ]
-    const mockSelectedMedication = 'Sample'
 
     return (
         <View>
-            <Modal isVisible={isModalVisibile}>
+            <Modal isVisible={props.isOpen}>
                 <View style={styles.modalContainer}>
                     <Text style={styles.text}>Selected Medication:</Text>
-                    <Text style={styles.medicationName}>{mockSelectedMedication}</Text>
+                    <Text style={styles.medicationName}>{props.medicationName}</Text>
                     <Text style={styles.text}>{`Start Date: ${selectedStartDate}`}</Text>
                     <Button 
                         title="Select Start Date"
@@ -62,7 +60,7 @@ export default function NewMedicationModal(): JSX.Element {
                         onCancel={() => setDatePickerVisibility(false)}
                     />
                     <Text style={styles.text}>
-                        {`What days do you take ${mockSelectedMedication}?`}
+                        {`What days do you take ${props.medicationName}?`}
                     </Text>
                     {daysOfTheWeek.map((day, index) => (
                         <BouncyCheckbox
@@ -78,7 +76,7 @@ export default function NewMedicationModal(): JSX.Element {
                         />
                     ))}
                     <Text style={styles.text}>
-                        {`How often do you take ${mockSelectedMedication} per day?`}
+                        {`How often do you take ${props.medicationName} per day?`}
                     </Text>
                     <NumericInput onChange={() => {}} />
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -86,14 +84,14 @@ export default function NewMedicationModal(): JSX.Element {
                             <Button 
                                 title='Cancel'
                                 color='#5838B4'
-                                onPress={() => setModalVisibility(false)}
+                                onPress={props.cancelToggle}
                             />
                         </View>
                         <View style={styles.modalActionButton}>              
                             <Button
                                 title='Save'
                                 color='#5838B4'
-                                onPress={() => setModalVisibility(false)}
+                                onPress={props.saveToggle}
                             />
                         </View>
                     </View>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Alert, StyleProp, TextStyle } from 'react-native'
 import Slider from '@react-native-community/slider'
+import NotesButton from '../components/NotesButton'
 
 const emojis: string[] = ["😭", "😢", "😐", "🙂", "😁", "⚡"]
 
@@ -50,6 +51,7 @@ export default function MoodAndEnergy(): JSX.Element {
                     thumbTintColor={"#BEB1A4"}
                 />
             }
+            <NotesButton/>
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => Alert.alert("Data Saved.")}>
@@ -109,7 +111,8 @@ const styles = StyleSheet.create({
     sliderQuestion: {
         color: 'black',
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
+        marginTop:15
     },
     button: {
         alignItems: "center",
