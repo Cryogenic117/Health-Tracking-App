@@ -14,9 +14,22 @@ export default function NewMedicationModal(props): JSX.Element {
         setSelectedStartDate(date)
         setDatePickerVisibility(false)
     }
+
     const handleConfirmEndDate = (date) => {
         setSelectedEndDate(date)
         setDatePickerVisibility(false)
+    }
+
+    const onSavePress = () => {
+        const newMedication: Medication = {
+            name: props.medicationName,
+            startDate: selectedStartDate,
+            endDate: selectedEndDate,
+            weeklyFrequency: tempWeeklyFrequency,
+            dailyDoses: tempDailyDoses,
+            notes: ''
+        } 
+        props.saveToggle(newMedication)
     }
 
     const daysOfTheWeek: string[] = [
@@ -28,6 +41,9 @@ export default function NewMedicationModal(props): JSX.Element {
         'Saturday',
         'Sunday'
     ]
+
+    let tempWeeklyFrequency: boolean[] = new Array(7).fill(false)
+    let tempDailyDoses: number = 0
 
     return (
         <View>
@@ -72,13 +88,13 @@ export default function NewMedicationModal(props): JSX.Element {
                             iconStyle={{ borderColor: "white" }}
                             innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
                             textStyle={{ textDecorationLine: "none", color: 'black' }}
-                            onPress={() => {}}
+                            onPress={() => {tempWeeklyFrequency[index] = !tempWeeklyFrequency[index]}}
                         />
                     ))}
                     <Text style={styles.text}>
                         {`How often do you take ${props.medicationName} per day?`}
                     </Text>
-                    <NumericInput onChange={() => {}} />
+                    <NumericInput onChange={(value) => {tempDailyDoses = value}} />
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                         <View style={styles.modalActionButton}>            
                             <Button 
@@ -91,7 +107,7 @@ export default function NewMedicationModal(props): JSX.Element {
                             <Button
                                 title='Save'
                                 color='#5838B4'
-                                onPress={props.saveToggle}
+                                onPress={onSavePress}
                             />
                         </View>
                     </View>
