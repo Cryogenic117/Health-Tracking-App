@@ -44,54 +44,55 @@ function DailyData(day): JSX.Element {
 
     return (
         <View style={{flex: 1}}>
-            <Text style={{fontWeight: 'bold', padding: 10, textAlign: 'center', fontSize: 32, color: 'black'}}>
+            <Text style={styles.dateHeading}>
                 {dateText}
             </Text>
             <ScrollView>
                 <View>
-                    <View style={{backgroundColor: '#5838B4', flexDirection: 'row'}}>
-                        <Image style={{width: 30, height: 30}} source={require('../../assets/SleepNavigationIcon.png')}/>
-                        <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold', color: 'white'}}>
+                    <View style={styles.dataTitle}>
+                        <Image style={styles.imageFormat} source={require('../../assets/SleepNavigationIcon.png')}/>
+                        <Text style={styles.titleText}>
                             Sleep
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{fontWeight: 'bold', paddingLeft: 55, color: 'black', fontSize: 20}}>
+                        <Text style={styles.otherText}>
                             Amount: 3-4 Hours{"\n"}Quality: 4/10
                         </Text>
                     </View>
                 </View>
                 <View>
-                    <View style={{backgroundColor: '#5838B4', flexDirection: 'row'}}>
-                        <Image style={{width: 30, height: 30}} source={require('../../assets/PillNavigationIcon.png')}/>
-                        <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold', color: 'white'}}>
+                    <View style={styles.dataTitle}>
+                        <Image style={styles.imageFormat} source={require('../../assets/PillNavigationIcon.png')}/>
+                        <Text style={styles.titleText}>
                             Medications
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{fontWeight: 'bold', paddingLeft: 55, color: 'black', fontSize: 20}}>
+                        <Text style={styles.otherText}>
                             Take Metformin 1 time(s) today{"\n"}Take Diazepam 2 times(s) today
                         </Text>
                     </View>
                 </View>
                 <View>
-                    <View style={{backgroundColor:'#5838B4', flexDirection: 'row'}}>
-                        <Image style={{width: 30, height: 30}}source={require('../../assets/MoodNavigationIcon.png')}/>
-                        <Text style={{paddingLeft: 10, fontSize: 24, fontWeight: 'bold',color: 'white'}}>
+                    <View style={styles.dataTitle}>
+                        <Image style={styles.imageFormat} source={require('../../assets/MoodNavigationIcon.png')}/>
+                        <Text style={styles.titleText}>
                             Mood/Energy
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{paddingLeft: 55, fontSize: 20, fontWeight: 'bold', color: '#5838B4', textDecorationLine: 'underline'}}>
+                        <Text style={styles.timeTitle}>
                             04:59:
                         </Text>
-                        <Text style={{fontWeight: 'bold', paddingLeft: 65, color: 'black', fontSize: 20}}>Mood: Sad{"\n"}
+                        <Text style={styles.moodText}>
+                            Mood: Sad{"\n"}
                             Energy: 1/10
                         </Text>
-                        <Text style={{paddingLeft: 55, fontSize: 20, fontWeight: 'bold', color: '#5838B4', textDecorationLine: 'underline'}}>
+                        <Text style={styles.timeTitle}>
                             13:32:
                         </Text>
-                        <Text style={{fontWeight: 'bold', paddingLeft: 65, color: 'black', fontSize: 20}}>
+                        <Text style={styles.moodText}>
                             Mood: Happy{"\n"}Energy: 6/10
                         </Text>
                     </View>
@@ -100,3 +101,45 @@ function DailyData(day): JSX.Element {
         </View>
     )
 }
+const styles = StyleSheet.create({
+    dataTitle: {
+        backgroundColor:'#5838B4',
+         flexDirection: 'row'
+    },
+    titleText: {
+        paddingLeft: 10, 
+        fontSize: 24, 
+        fontWeight: 'bold',
+        color: 'white'
+    },
+    moodText: {
+        fontWeight: 'bold', 
+        paddingLeft: 65, 
+        color: 'black', 
+        fontSize: 20
+    },
+    imageFormat: {
+        width: 30, 
+        height: 30
+    },
+    timeTitle: {
+        paddingLeft: 55, 
+        fontSize: 20, 
+        fontWeight: 'bold', 
+        color: '#5838B4', 
+        textDecorationLine: 'underline'
+    },
+    otherText: {
+        fontWeight: 'bold', 
+        paddingLeft: 55, 
+        color: 'black', 
+        fontSize: 20
+    },
+    dateHeading : {
+        fontWeight: 'bold', 
+        padding: 10, 
+        textAlign: 'center', 
+        fontSize: 32, 
+        color: 'black'
+    }
+})
