@@ -48,54 +48,50 @@ function DailyData(day): JSX.Element {
                 {dateText}
             </Text>
             <ScrollView>
-                <View>
-                    <View style={styles.dataTitle}>
-                        <Image style={styles.imageFormat} source={require('../../assets/SleepNavigationIcon.png')}/>
-                        <Text style={styles.titleText}>
-                            Sleep
-                        </Text>
-                    </View>
-                    <View style={{paddingTop: 10}}>
-                        <Text style={styles.otherText}>
-                            Amount: 3-4 Hours{"\n"}Quality: 4/10
-                        </Text>
-                    </View>
+                <View style={styles.dataTitle}>
+                    <Image style={styles.imageFormat} source={require('../../assets/SleepNavigationIcon.png')}/>
+                    <Text style={styles.titleText}>
+                        Sleep
+                    </Text>
                 </View>
-                <View>
-                    <View style={styles.dataTitle}>
-                        <Image style={styles.imageFormat} source={require('../../assets/PillNavigationIcon.png')}/>
-                        <Text style={styles.titleText}>
-                            Medications
-                        </Text>
-                    </View>
-                    <View style={{paddingTop: 10}}>
-                        <Text style={styles.otherText}>
-                            Take Metformin 1 time(s) today{"\n"}Take Diazepam 2 times(s) today
-                        </Text>
-                    </View>
+                <View style={{paddingTop: 10}}>
+                    <Text style={styles.otherText}>
+                        Amount: 3-4 Hours{"\n"}Quality: 4/10
+                    </Text>
                 </View>
-                <View>
-                    <View style={styles.dataTitle}>
-                        <Image style={styles.imageFormat} source={require('../../assets/MoodNavigationIcon.png')}/>
-                        <Text style={styles.titleText}>
-                            Mood/Energy
-                        </Text>
-                    </View>
-                    <View style={{paddingTop: 10}}>
-                        <Text style={styles.timeTitle}>
-                            04:59:
-                        </Text>
-                        <Text style={styles.moodText}>
-                            Mood: Sad{"\n"}
-                            Energy: 1/10
-                        </Text>
-                        <Text style={styles.timeTitle}>
-                            13:32:
-                        </Text>
-                        <Text style={styles.moodText}>
-                            Mood: Happy{"\n"}Energy: 6/10
-                        </Text>
-                    </View>
+
+                <View style={styles.dataTitle}>
+                    <Image style={styles.imageFormat} source={require('../../assets/PillNavigationIcon.png')}/>
+                    <Text style={styles.titleText}>
+                        Medications
+                    </Text>
+                </View>
+                <View style={{paddingTop: 10}}>
+                    <Text style={styles.otherText}>
+                        Take Metformin 1 time(s) today{"\n"}Take Diazepam 2 times(s) today
+                    </Text>
+                </View>
+                
+                <View style={styles.dataTitle}>
+                    <Image style={styles.imageFormat} source={require('../../assets/MoodNavigationIcon.png')}/>
+                    <Text style={styles.titleText}>
+                        Mood/Energy
+                    </Text>
+                </View>
+                <View style={{paddingTop: 10}}>
+                    <Text style={styles.timeTitle}>
+                        04:59:
+                    </Text>
+                    <Text style={styles.moodText}>
+                        Mood: Sad{"\n"}
+                        Energy: 1/10
+                    </Text>
+                    <Text style={styles.timeTitle}>
+                        13:32:
+                    </Text>
+                    <Text style={styles.moodText}>
+                        Mood: Happy{"\n"}Energy: 6/10
+                    </Text>
                 </View>
             </ScrollView>
         </View>
