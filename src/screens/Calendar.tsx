@@ -43,8 +43,8 @@ function DailyData(day): JSX.Element {
     var dateText = monthNames[day.substring(5,7)-1] + " " + dayText + ", " + day.substring(0,4)
 
     return (
-        <View style={{backgroundColor: 'white', flex: 1}}>
-            <Text style={{fontWeight: 'bold', backgroundColor: 'white', padding: 10, textAlign: 'center', fontSize: 32, color: 'black'}}>
+        <View style={{flex: 1}}>
+            <Text style={{fontWeight: 'bold', padding: 10, textAlign: 'center', fontSize: 32, color: 'black'}}>
                 {dateText}
             </Text>
             <ScrollView>
