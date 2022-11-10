@@ -43,8 +43,8 @@ function DailyData(day): JSX.Element {
     var dateText = monthNames[day.substring(5,7)-1] + " " + dayText + ", " + day.substring(0,4)
 
     return (
-        <View style={{backgroundColor:'black', flex: 1, borderBottomColor: 'white', borderBottomWidth: 1,}}>
-            <Text style={{backgroundColor:'black',padding: 10,textAlign: 'center', fontSize: 32, color: 'white'}}>
+        <View style={{backgroundColor: 'white', flex: 1}}>
+            <Text style={{fontWeight: 'bold', backgroundColor: 'white', padding: 10, textAlign: 'center', fontSize: 32, color: 'black'}}>
                 {dateText}
             </Text>
             <ScrollView>
@@ -56,7 +56,7 @@ function DailyData(day): JSX.Element {
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>
+                        <Text style={{fontWeight: 'bold', paddingLeft: 55, color: 'black', fontSize: 20}}>
                             Amount: 3-4 Hours{"\n"}Quality: 4/10
                         </Text>
                     </View>
@@ -69,7 +69,7 @@ function DailyData(day): JSX.Element {
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>
+                        <Text style={{fontWeight: 'bold', paddingLeft: 55, color: 'black', fontSize: 20}}>
                             Take Metformin 1 time(s) today{"\n"}Take Diazepam 2 times(s) today
                         </Text>
                     </View>
@@ -82,16 +82,16 @@ function DailyData(day): JSX.Element {
                         </Text>
                     </View>
                     <View style={{paddingTop: 10}}>
-                        <Text style={{paddingLeft: 45, fontSize: 20, fontWeight: 'bold',color: '#5838B4', textDecorationLine: 'underline'}}>
-                            4:59:
+                        <Text style={{paddingLeft: 55, fontSize: 20, fontWeight: 'bold', color: '#5838B4', textDecorationLine: 'underline'}}>
+                            04:59:
                         </Text>
-                        <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>Mood: Sad{"\n"}
-                        Energy: 1/10
+                        <Text style={{fontWeight: 'bold', paddingLeft: 65, color: 'black', fontSize: 20}}>Mood: Sad{"\n"}
+                            Energy: 1/10
                         </Text>
-                        <Text style={{paddingLeft: 45, fontSize: 20, fontWeight: 'bold',color: '#5838B4', textDecorationLine: 'underline'}}>
+                        <Text style={{paddingLeft: 55, fontSize: 20, fontWeight: 'bold', color: '#5838B4', textDecorationLine: 'underline'}}>
                             13:32:
                         </Text>
-                        <Text style={{paddingLeft: 55, color: 'white', fontSize: 20}}>
+                        <Text style={{fontWeight: 'bold', paddingLeft: 65, color: 'black', fontSize: 20}}>
                             Mood: Happy{"\n"}Energy: 6/10
                         </Text>
                     </View>
