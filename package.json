@@ -1,7 +1,7 @@
 {
   "name": "healthtrackingapp",
   "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "src/App.tsx",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -45,8 +45,7 @@
     "react-native-spinkit": "^1.5.1",
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "^0.18.9",
-    "typescript": "^4.6.3",
-    "yarn": "^1.22.19"
+    "typescript": "^4.6.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
