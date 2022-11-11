@@ -1,135 +1,86 @@
 import React, { useState } from 'react'
-import { ScrollView, StatusBar, Text, View, StyleSheet, TouchableOpacity } from 'react-native'
-import SearchBar from "react-native-dynamic-search-bar"
+import { ScrollView, StatusBar, ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
 
-let currentQuery: string = ""
-let searchResults: string[] = []
-let userMedications: string[] = []
-
 export default function Medication(): JSX.Element {
+    const [currentText,setCurrentText] = useState("")
+	const[results,setResults]= useState(null)
+	const[textEditable,setTextEditable]= useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
     const [selectedMedication, setSelectedMedication] = useState("")
     const [showModal, setShowModal] = useState(false)
-    const [refreshSearchList, setRefreshSearchList,] = useState(false)    
+    const [refreshSearchList, setRefreshSearchList,] = useState(false)
 
-    const onNewQuery = (queryText: string) => {
-        if (queryText.length != 0 && !isSearchActive) {
-            setSearchActive(true)
-        }
-        currentQuery = queryText
+    function search() {
+        const currentQuery = currentText
+        setResults(<ActivityIndicator size="small" color="#0000ff" />)
+        setTextEditable(false)
+        fetch("https://api.fda.gov/drug/label.json?search=openfda.brand_name:"+ currentQuery + '&limit=100')
+        .then(raw_data => raw_data.json())
+        .then(data => {
+            if (data.error){
+                const not_found_text = <Text>The results you searched for where not found.</Text>
+                setResults(not_found_text)
+                return null
+            }
+    
+            // gets items to render from the output of the FDA API
+            let to_render = get_items(data)
+            // update what is rendering on this object based on the items above.
+            setResults(to_render)
+        })
+        .then(() => {setTextEditable(true)})
     }
-
-    const onClearSearch = () => {
-        searchResults = []
-        setSearchActive(false)
-    }
-
-    const onSearchButtonPress = () => {
-        searchRx(currentQuery)
-        setTimeout(() => {
-            setRefreshSearchList(!refreshSearchList)
-        }, 1000)        
-    }
-
-    const onSearchCardPress = (searchResult: string) => {
-        setSelectedMedication(searchResult)
-        setShowModal(true)
-    }
-
-    const medicationModalCancelToggle = () => {
-        setShowModal(!showModal)
-    }
-
-    const medicationModalSaveToggle = () => {
-        userMedications.push(selectedMedication)
-        setShowModal(!showModal)
-        setSearchActive(false)
+    function get_items(data){
+        return data.results.map((item) => {
+            return(
+                <View style={styles.item}key={item.id}>
+                    <View style={{flex:7}}>
+                        <Text style={styles.drugName}>
+                            {item.openfda.brand_name[0].charAt(0).toUpperCase()+item.openfda.brand_name[0].substr(1).toLowerCase()}
+                        </Text>
+                        <Text style={styles.drugInfo}>
+                            Form: {item.openfda.route[0].charAt(0).toUpperCase()+item.openfda.route[0].substr(1).toLowerCase()+"\n"}
+                            Brands: {item.openfda.generic_name[0].charAt(0).toUpperCase()+item.openfda.generic_name[0].substr(1).toLowerCase()}
+                           
+                        </Text>
+                        
+                    </View>
+                </View>
+            )
+        })
     }
 
     return (
-        <View style={{marginTop: StatusBar.currentHeight, marginBottom: 200}}>
-            <SearchBar 
-                placeholder='Add a Medication'
-                onChangeText={(text) => onNewQuery(text)}
-                onClearPress={() => onClearSearch()}                
-                onSearchPress={() => onSearchButtonPress()}
-            />
-            {!isSearchActive && 
-                <View style={{paddingHorizontal: 20}}>
-                    <Text style={{fontSize: 30, paddingVertical: 10}}>Your Medications</Text>
-                    <ScrollView>
-                        {userMedications.map((medName, index) => (
-                            <View key={index} style={{paddingVertical: 10}}>
-                                <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
-                                <NotesButton/>
-                            </View>
-                        ))}
-                    </ScrollView>
-                </View>
-            }
-            {isSearchActive &&
-                <ScrollView>
-                    {searchResults.map((searchResult, index) => (
-                        <TouchableOpacity key={index} style={styles.searchResultCard} onPress={() => onSearchCardPress(searchResult)}>
-                            <Text style={styles.searchResultCardText}>{searchResult}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            }
-            <NewMedicationModal 
-                medicationName={selectedMedication} 
-                cancelToggle={medicationModalCancelToggle}
-                saveToggle={medicationModalSaveToggle}
-                isOpen={showModal}
-            />
-        </View>
+            <View style={{flex:1}}>
+				<View style={{flex:1, margin: "auto", alignContent:"center", flexDirection:"row"}}>
+					<TextInput onChangeText={text => setCurrentText(text)} autoCorrect={false}
+                        placeholder="Enter a drug" onSubmitEditing={()=>search()}
+						editable={textEditable}
+						style={{flex:9, marginTop: 30, alignItems:"center", textAlign: "center", backgroundColor: "white", alignContent:"center"}}/>
+				</View>
+				<View style={{flex:6}}>
+					<ScrollView style={{flex:8}}>
+						{results}
+					</ScrollView>
+				</View>
+			</View>
     )
 }
 
-function searchRx(searchTerm: string) {
-    fetch(`https://rxnav.nlm.nih.gov/REST/RxTerms/allconcepts.json`)
-        .then((response) => response.json())
-        .then((data) => data.minConceptGroup.minConcept)
-        .then((apiResults) => {
-            let searchResults = []
-            apiResults.forEach((result) => {
-                if (result.fullName.includes(searchTerm)) {
-                    searchResults.push(result)
-                }
-            })
-            return searchResults
-        })
-        .then((searchResults) => {
-            let searchResultIDs = []
-            searchResults.forEach((searchResult) => {
-                searchResultIDs.push(searchResult.rxcui)
-            })
-            return searchResultIDs
-        })
-        .then((searchResultIDs) => {      
-            let searchResultDisplayNames = []
-            searchResultIDs.forEach((ID) => {
-                fetch(`https://rxnav.nlm.nih.gov/REST/RxTerms/rxcui/${ID}/name.json`)
-                    .then((response) => response.json())
-                    .then((data) => searchResultDisplayNames.push(data.displayGroup.displayName))
-            })
-            searchResults = searchResultDisplayNames
-        })
-}
-
 const styles = StyleSheet.create({
-    searchResultCard: {
-        borderRadius: 10,
-        borderWidth: 2,
-        height: 50,
-        margin: 10,
-        justifyContent: 'center',
-        alignContent: 'center'
+	drugName: {
+		fontSize: 16,
+		fontWeight: "bold",
+	},
+    drugInfo: {
+        fontSize:12
     },
-    searchResultCardText: {
-        textAlign: 'center',
-        fontSize: 24
+    item: {
+        flex: 3,
+        borderBottomColor: "grey",
+        borderBottomWidth: 2,
+        padding: 25
     }
 })
