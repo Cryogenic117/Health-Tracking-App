@@ -6,17 +6,30 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 import NumericInput from 'react-native-numeric-input'
 
 export default function NewMedicationModal(props): JSX.Element {
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+    const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false)
+    const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false)
     const [selectedStartDate, setSelectedStartDate] = useState('')
     const [selectedEndDate, setSelectedEndDate] = useState('')
 
     const handleConfirmStartDate = (date) => {
         setSelectedStartDate(date)
-        setDatePickerVisibility(false)
+        setStartDatePickerVisibility(false)
     }
+
     const handleConfirmEndDate = (date) => {
         setSelectedEndDate(date)
-        setDatePickerVisibility(false)
+        setEndDatePickerVisibility(false)
+    }
+
+    const onSavePress = () => {
+        const newMedication: MedicationModel = {
+            name: props.medicationName,
+            dateRange: [selectedStartDate, selectedEndDate],
+            weeklyFrequency: tempWeeklyFrequency,
+            dailyDoses: tempDailyDoses,
+            notes: ''
+        } 
+        props.saveToggle(newMedication)
     }
 
     const daysOfTheWeek: string[] = [
@@ -29,6 +42,9 @@ export default function NewMedicationModal(props): JSX.Element {
         'Sunday'
     ]
 
+    let tempWeeklyFrequency: boolean[] = new Array(7).fill(false)
+    let tempDailyDoses: number = 0
+
     return (
         <View>
             <Modal isVisible={props.isOpen}>
@@ -39,25 +55,25 @@ export default function NewMedicationModal(props): JSX.Element {
                     <Button 
                         title="Select Start Date"
                         color='#5838B4'
-                        onPress={() => setDatePickerVisibility(true)}
+                        onPress={() => setStartDatePickerVisibility(true)}
                     />
                     <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                        isVisible={isStartDatePickerVisible}
                         mode="date"
                         onConfirm={handleConfirmStartDate}
-                        onCancel={() => setDatePickerVisibility(false)}
+                        onCancel={() => setStartDatePickerVisibility(false)}
                     />
                     <Text style={styles.text}>{`End Date: ${selectedEndDate}`}</Text>
                     <Button 
                         title="Select End Date"
                         color='#5838B4'
-                        onPress={() => setDatePickerVisibility(true)}
+                        onPress={() => setEndDatePickerVisibility(true)}
                     />
                     <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                        isVisible={isEndDatePickerVisible}
                         mode="date"
                         onConfirm={handleConfirmEndDate}
-                        onCancel={() => setDatePickerVisibility(false)}
+                        onCancel={() => setEndDatePickerVisibility(false)}
                     />
                     <Text style={styles.text}>
                         {`What days do you take ${props.medicationName}?`}
@@ -72,13 +88,13 @@ export default function NewMedicationModal(props): JSX.Element {
                             iconStyle={{ borderColor: "white" }}
                             innerIconStyle={{ borderWidth: 2, borderRadius: 8}}
                             textStyle={{ textDecorationLine: "none", color: 'black' }}
-                            onPress={() => {}}
+                            onPress={() => {tempWeeklyFrequency[index] = !tempWeeklyFrequency[index]}}
                         />
                     ))}
                     <Text style={styles.text}>
                         {`How often do you take ${props.medicationName} per day?`}
                     </Text>
-                    <NumericInput onChange={() => {}} />
+                    <NumericInput onChange={(value) => {tempDailyDoses = value}} />
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                         <View style={styles.modalActionButton}>            
                             <Button 
@@ -91,7 +107,7 @@ export default function NewMedicationModal(props): JSX.Element {
                             <Button
                                 title='Save'
                                 color='#5838B4'
-                                onPress={props.saveToggle}
+                                onPress={onSavePress}
                             />
                         </View>
                     </View>

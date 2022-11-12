@@ -3,6 +3,7 @@ import { ScrollView, StatusBar, Text, View, StyleSheet, TouchableOpacity } from 
 import SearchBar from "react-native-dynamic-search-bar"
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 let currentQuery: string = ""
 let searchResults: string[] = []
@@ -42,10 +43,21 @@ export default function Medication(): JSX.Element {
         setShowModal(!showModal)
     }
 
-    const medicationModalSaveToggle = () => {
+    const medicationModalSaveToggle = (medication: MedicationModel) => {
         userMedications.push(selectedMedication)
         setShowModal(!showModal)
         setSearchActive(false)
+        storeMedicationData(medication)
+    }
+
+    const storeMedicationData = async (medication: MedicationModel) => {
+        const key: number = Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1);
+        try {
+            const jsonValue = JSON.stringify(medication)
+            await AsyncStorage.setItem(`${key}`, jsonValue)
+        } catch (e) {
+            console.log(`There was an error saving the medication (key: ${key}): ${e}`)
+        }
     }
 
     return (
