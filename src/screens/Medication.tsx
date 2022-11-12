@@ -15,22 +15,27 @@ export default function Medication(): JSX.Element {
     function search() {
         const currentQuery = text
         setResults(<ActivityIndicator size="small" color="#0000ff" />)
+        try{
         setTextEditable(false)
         fetch("https://api.fda.gov/drug/label.json?search=openfda.brand_name:"+ currentQuery + '&limit=100')
         .then(raw_data => raw_data.json())
         .then(data => {
             if (data.error){
-                const not_found_text = <Text>The results you searched for where not found.</Text>
+                const not_found_text = <Text style={styles.error}>The results you searched for were not found.</Text>
                 setResults(not_found_text)
                 return null
             }
-    git
+    
             // gets items to render from the output of the FDA API
             let to_render = get_items(data)
             // update what is rendering on this object based on the items above.
             setResults(to_render)
         })
         .then(() => {setTextEditable(true)})
+    } catch(error) {
+        const error_text = <Text style={styles.error}>There was an error, try again.</Text>
+        setResults(error_text)
+    }
     }
     function get_items(data){
         return data.results.map((item) => {
@@ -116,6 +121,10 @@ export default function Medication(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+    error: {
+        textAlign: "center",
+        fontSize: 24
+    },
 	drugName: {
 		fontSize: 16,
 		fontWeight: "bold",
