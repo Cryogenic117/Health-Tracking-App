@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import { ScrollView, SafeAreaView, Image, StatusBar, ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import React, { useState, Component } from 'react'
+import { ScrollView, SafeAreaView, Image, StatusBar, ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
 
 export default function Medication(): JSX.Element {
-    const [currentText,setCurrentText] = useState("")
 	const[results,setResults]= useState(null)
 	const[textEditable,setTextEditable]= useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
     const [selectedMedication, setSelectedMedication] = useState("")
     const [showModal, setShowModal] = useState(false)
     const [userMedications, setUserMedications] = useState<string[]>([])
+    const [text,setText] = useState("")
 
     function search() {
-        const currentQuery = currentText
+        const currentQuery = text
         setResults(<ActivityIndicator size="small" color="#0000ff" />)
         setTextEditable(false)
         fetch("https://api.fda.gov/drug/label.json?search=openfda.brand_name:"+ currentQuery + '&limit=100')
@@ -24,7 +24,7 @@ export default function Medication(): JSX.Element {
                 setResults(not_found_text)
                 return null
             }
-    
+    git
             // gets items to render from the output of the FDA API
             let to_render = get_items(data)
             // update what is rendering on this object based on the items above.
@@ -52,6 +52,7 @@ export default function Medication(): JSX.Element {
     }
     function resultPressed(medName) {
         setSelectedMedication(medName)
+        setText("")
         setResults(null)
         setShowModal(true)
     }
@@ -64,25 +65,27 @@ export default function Medication(): JSX.Element {
         setShowModal(!showModal)
         setSearchActive(false)
     }
-    function searchEdit(text){
-        setCurrentText(text)
-    }
+
     function cancelButtonPressed() {
         setSearchActive(false)
         setResults(null)
+        setText("")
+        Keyboard.dismiss()
     }
     return(
-            <SafeAreaView style={{flex:1}}>
+            <SafeAreaView style={styles.AndroidSafeArea}>
 				<SafeAreaView style={{flex:1, margin: "auto", alignSelf: 'center', alignContent:"center", flexDirection:"row"}}>
-					<TextInput onChangeText={text => searchEdit(text)} 
+					<TextInput onChangeText={value => setText(value)}
                         onPressIn={() => setSearchActive(true)}
                         autoCorrect={false}
-                        onSubmitEditing={()=>search()}
-						editable={isSearchActive}
+                        value = {text}
+                        onSubmitEditing={()=> search()}
+						editable={textEditable}
                         placeholder= "Add a medication"
+                        clearButtonMode='always'
 						style={styles.search}/>
                     {isSearchActive &&
-                        <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>C A N C E L</Text>
+                            <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>C A N C E L</Text>
                     }
 				</SafeAreaView>
 				<View style={{flex:6}}>
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
         textAlign: "center", 
         backgroundColor: "white", 
         borderRadius: 10,
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: '#d3d3d3',
     },
     cancel: {
@@ -145,5 +148,10 @@ const styles = StyleSheet.create({
         flex: 2, 
         textAlign: "center",
         color: 'black',
-    }
+    },
+    AndroidSafeArea: {
+        flex: 1,
+        backgroundColor: "white",
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+      }
 })
