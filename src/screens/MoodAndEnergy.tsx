@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert, StyleProp, TextStyle, Image, ImageStyle} from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, StyleProp, TextStyle, Image, ImageStyle } from 'react-native'
 import Slider from '@react-native-community/slider'
 import NotesButton from '../components/NotesButton' 
 
