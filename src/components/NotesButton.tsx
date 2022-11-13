@@ -10,25 +10,27 @@ export default function NotesButton(): JSX.Element {
             <Text style = {styles.buttonText}>+ Notes </Text>    
             <Modal isVisible = {isModalVisible}>
                 <View style = {styles.modalContainer} > 
-                        <Text style = {styles.title}>Current Note</Text>  
-                        <ScrollView>                      
-                            <TextInput 
-                                style = {styles.noteInput}
-                                multiline = {true}
-                                selectionColor = {'#5838B4'}
-                            />
-                        </ScrollView>
+                        <Text style = {styles.title}>Notes</Text>  
+                        <View style={{borderWidth: .75, flex: 1}}>
+                            <ScrollView>                      
+                                <TextInput 
+                                    style = {styles.noteInput}
+                                    multiline = {true}
+                                    selectionColor = {'#5838B4'}
+                                />
+                            </ScrollView>
+                        </View> 
                     <View style = {styles.buttons}>
                         <View style = {styles.eachButton}>
                             <Button 
-                                color = {'#5838B4'}
+                                color = {'#2596be'}
                                 title = 'Cancel'
                                 onPress = {() => setModalVisibility(false)}                         
                             />
                         </View>
                         <View style = {styles.eachButton}>
                             <Button                         
-                                color = {'#5838B4'} 
+                                color = {'#2596be'} 
                                 title = 'Save'
                                 onPress = {() => setModalVisibility(false)}
                             />
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1, 
-        backgroundColor: 'black', 
+        backgroundColor: 'white', 
         padding: 15, 
         borderRadius: 10, 
         justifyContent: 'space-between'
@@ -62,8 +64,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 23,
         textAlign: 'center',
-        fontWeight: 'bold',
-        color: 'white'
+        color: 'black'
     },
     eachButton: {
         flex: 1,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10
     },
     buttons:{
-        flex: 0.75,
+        flex: 0.01,
         flexDirection: 'row',
         alignItems: 'center',
         position: 'relative',
