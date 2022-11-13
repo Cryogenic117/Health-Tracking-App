@@ -9,33 +9,33 @@ import Sleep from '../screens/Sleep'
 const Tab = createBottomTabNavigator()
 
 const calendarTabOptions = {
-    tabBarIcon: ({focused}) => (
-        focused 
-         ?  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedCalendarIcon.png')} />
-         :  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewCalendarIcon.png')} />
+    tabBarIcon: ({focused}) => ( focused ?
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedCalendarIcon.png')} /> :
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewCalendarIcon.png')} />
     )
 }
+
 const medicationTabOptions = {
-    tabBarIcon: ({focused}) => (
-        focused 
-         ?  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedMedsIcon.png')} />
-         :  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewMedsIcon.png')} />
+    tabBarIcon: ({focused}) => ( focused ?  
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedMedsIcon.png')} /> :
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewMedsIcon.png')} />
     )
 }
+
 const moodAndEnergyTabOptions = {
-    tabBarIcon: ({focused}) => (
-        focused 
-         ?  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedMoodIcon.png')} />
-         :  <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewMoodIcon.png')} />
+    tabBarIcon: ({focused}) => ( focused ?
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedMoodIcon.png')} /> :
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewMoodIcon.png')} />
     )
 }
+
 const sleepTabOptions = {
-    tabBarIcon: ({focused}) => (
-        focused 
-         ?   <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedSleepIcon.png')} />
-         :   <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSleepIcon.png')} />
-        )
+    tabBarIcon: ({focused}) => ( focused ?
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSelectedSleepIcon.png')} /> :
+        <Image style={{height: 25, width: 25}} source={require('../../assets/NavBarIcons/NewSleepIcon.png')} />
+    )
 }
+
 const navBarScreenOptions = {
     headerShown: false,
     tabBarShowLabel: false,
