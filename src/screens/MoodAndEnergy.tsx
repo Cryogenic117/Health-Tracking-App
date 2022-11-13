@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, StyleProp, TextStyle, 
 import Slider from '@react-native-community/slider'
 import NotesButton from '../components/NotesButton' 
 
-
 export default function MoodAndEnergy(): JSX.Element {
     const [isMoodSelected, setIsMoodSelected] = useState(false)
     const [moodIntensity, setMoodIntensity] = useState(0)
