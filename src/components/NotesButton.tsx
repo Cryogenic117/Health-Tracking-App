@@ -9,34 +9,32 @@ export default function NotesButton(): JSX.Element {
         <TouchableOpacity onPress = {() => setModalVisibility(true)}>
             <Text style = {styles.buttonText}>+ Notes </Text>    
             <Modal isVisible = {isModalVisible}>
-                <KeyboardAvoidingView style = {{flex: 1}} behavior = "padding">
-                    <View style = {styles.modalContainer} > 
-                            <Text style = {styles.title}>Current Note</Text>  
-                            <ScrollView>                      
-                                <TextInput 
-                                    style = {styles.noteInput}
-                                    multiline = {true}
-                                    selectionColor = {'#5838B4'}
-                                />
-                            </ScrollView>
-                        <View style = {styles.buttons}>
-                            <View style = {styles.eachButton}>
-                                <Button 
-                                    color = {'#5838B4'}
-                                    title = 'Cancel'
-                                    onPress = {() => setModalVisibility(false)}                         
-                                />
-                            </View>
-                            <View style = {styles.eachButton}>
-                                <Button                         
-                                    color = {'#5838B4'} 
-                                    title = 'Save'
-                                    onPress = {() => setModalVisibility(false)}
-                                />
-                            </View>
-                        </View>     
-                    </View>
-                </KeyboardAvoidingView>
+                <View style = {styles.modalContainer} > 
+                        <Text style = {styles.title}>Current Note</Text>  
+                        <ScrollView>                      
+                            <TextInput 
+                                style = {styles.noteInput}
+                                multiline = {true}
+                                selectionColor = {'#5838B4'}
+                            />
+                        </ScrollView>
+                    <View style = {styles.buttons}>
+                        <View style = {styles.eachButton}>
+                            <Button 
+                                color = {'#5838B4'}
+                                title = 'Cancel'
+                                onPress = {() => setModalVisibility(false)}                         
+                            />
+                        </View>
+                        <View style = {styles.eachButton}>
+                            <Button                         
+                                color = {'#5838B4'} 
+                                title = 'Save'
+                                onPress = {() => setModalVisibility(false)}
+                            />
+                        </View>
+                    </View>     
+                </View>
             </Modal>
         </TouchableOpacity>
     )
@@ -51,15 +49,14 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1, 
         backgroundColor: 'black', 
-        padding: 20, 
+        padding: 15, 
         borderRadius: 10, 
         justifyContent: 'space-between'
     },
     noteInput:{
-        backgroundColor: 'lightgrey',
+        backgroundColor: 'white',
         height: 550,
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 16,
         textAlignVertical: 'top'
     },
     title: {
@@ -71,14 +68,14 @@ const styles = StyleSheet.create({
     eachButton: {
         flex: 1,
         justifyContent: 'space-between',
-        padding: 10
+        marginHorizontal: 10
     },
     buttons:{
         flex: 0.75,
         flexDirection: 'row',
         alignItems: 'center',
-        bottom: 80,
-        position: 'relative'
+        position: 'relative',
+        minHeight: 50
     }
 })
 
