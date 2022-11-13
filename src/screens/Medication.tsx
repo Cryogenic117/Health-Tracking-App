@@ -107,7 +107,7 @@ export default function Medication(): JSX.Element {
 
     return (
         <SafeAreaView style={styles.androidSafeArea}>
-            <SafeAreaView style={{flex: 1, margin: "auto", alignSelf: 'center', alignContent:"center", flexDirection:"row"}}>
+            <SafeAreaView style={{flex: 1, margin: 10, alignSelf: 'center', alignContent:"center", flexDirection:"row"}}>
                 <TextInput 
                     onChangeText={value => setText(value)}
                     onPressIn={() => setSearchActive(true)}
@@ -123,7 +123,7 @@ export default function Medication(): JSX.Element {
                     <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>{"C A N C E L"}</Text>
                 }
             </SafeAreaView>
-            <View style={{flex:6}}>
+            <View style={{flex: 9}}>
                 {!isSearchActive &&
                     <View style={{flex:1}}>
                         <Text style={{alignSelf: 'center', fontSize: 30}}>{"Your Medications"}</Text>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     search: {
         maxHeight: 50, 
         minHeight: 50, 
-        maxWidth: '90%', 
+        maxWidth: '95%', 
         flex: 8, 
         textAlign: "center", 
         backgroundColor: "white", 
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         paddingTop: 12.5,
         maxHeight: 50, 
         minHeight: 50, 
-        maxWidth: '90%', 
+        maxWidth: '95%', 
         flex: 2, 
         textAlign: "center",
         color: 'black'
