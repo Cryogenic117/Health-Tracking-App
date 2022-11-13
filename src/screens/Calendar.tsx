@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StatusBar, StyleSheet, Text, View, ScrollView, Image } from 'react-native'
+import { StatusBar, SafeAreaView, StyleSheet, Text, ScrollView, Image } from 'react-native'
 import { Agenda, CalendarProvider } from 'react-native-calendars'
 
 export default function Calendar(): JSX.Element {
@@ -7,8 +7,8 @@ export default function Calendar(): JSX.Element {
     const initialDate = date.toISOString().substring(0,10)
     const [currentDateSelected,setCurrentDateSelected] = useState(initialDate)
     return (
-        <View style={{marginTop: StatusBar.currentHeight}}>
-            <View style={{height: '100%'}}>
+        <SafeAreaView style={{marginTop: StatusBar.currentHeight}}>
+            <SafeAreaView style={{height: '100%'}}>
                 <CalendarProvider date={currentDateSelected}>             
                 <Agenda renderList={() => DailyData(currentDateSelected)}
                     onDayPress={day => {   
@@ -25,8 +25,8 @@ export default function Calendar(): JSX.Element {
                     }}
                 />
                 </CalendarProvider> 
-            </View>
-        </View>
+            </SafeAreaView>
+        </SafeAreaView>
     )
 }
 
@@ -56,39 +56,39 @@ function DailyData(day): JSX.Element {
     let dateText: string = monthNames[day.substring(5, 7) - 1] + " " + dayText + ", " + day.substring(0, 4)
 
     return (
-        <View style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1}}>
             <Text style={styles.dateHeading}>
                 {dateText}
             </Text>
             <ScrollView>
-                <View style={styles.dataTitle}>
+                <SafeAreaView style={styles.dataTitle}>
                     <Image style={styles.imageFormat} source={require('../../assets/SleepNavigationIcon.png')}/>
                     <Text style={styles.titleText}>{"Sleep"}</Text>
-                </View>
-                <View style={{paddingTop: 10}}>
+                </SafeAreaView>
+                <SafeAreaView style={{paddingTop: 10}}>
                     <Text style={styles.otherText}>{"Amount: 3-4 Hours\nQuality: 4/10"}</Text>
-                </View>
-                <View style={styles.dataTitle}>
+                </SafeAreaView>
+                <SafeAreaView style={styles.dataTitle}>
                     <Image style={styles.imageFormat} source={require('../../assets/PillNavigationIcon.png')}/>
                     <Text style={styles.titleText}>{"Medications"}</Text>
-                </View>
-                <View style={{paddingTop: 10}}>
+                </SafeAreaView>
+                <SafeAreaView style={{paddingTop: 10}}>
                     <Text style={styles.otherText}>
                         {"Take Metformin 1 time(s) today\nTake Diazepam 2 times(s) today"}
                     </Text>
-                </View>                
-                <View style={styles.dataTitle}>
+                </SafeAreaView>                
+                <SafeAreaView style={styles.dataTitle}>
                     <Image style={styles.imageFormat} source={require('../../assets/MoodNavigationIcon.png')}/>
                     <Text style={styles.titleText}>{"Mood/Energy"}</Text>
-                </View>
-                <View style={{paddingTop: 10}}>
+                </SafeAreaView>
+                <SafeAreaView style={{paddingTop: 10}}>
                     <Text style={styles.timeTitle}>{"04:59:"}</Text>
                     <Text style={styles.moodText}>{"Mood: Sad\nEnergy: 1/10"}</Text>
                     <Text style={styles.timeTitle}>{"13:32:"}</Text>
                     <Text style={styles.moodText}>{"Mood: Happy\nEnergy: 6/10"}</Text>
-                </View>
+                </SafeAreaView>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     )
 }
 const styles = StyleSheet.create({

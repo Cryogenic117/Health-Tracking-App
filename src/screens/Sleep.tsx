@@ -51,6 +51,7 @@ let selectedButton
 let data = []
 export default function Sleep(): JSX.Element {
     const [sliderValue, tempValue] = useState(1)
+
     const onPress = async () => {
         data[0] = selectedButton
         data[1] = sliderValue
@@ -69,8 +70,10 @@ export default function Sleep(): JSX.Element {
             }
         }
     }
+
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
-    function onPressRadioButton(radioButtonsArray: RadioButtonProps[]) {
+
+    const onPressRadioButton = (radioButtonsArray: RadioButtonProps[]) => {
         setRadioButtons(radioButtonsArray)
         radioButtonsArray.forEach(
             function (button) {
