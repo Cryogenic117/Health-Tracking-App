@@ -4,128 +4,49 @@ import Slider from '@react-native-community/slider'
 import NotesButton from '../components/NotesButton' 
 
 export default function MoodAndEnergy(): JSX.Element {
-    const [isMoodSelected, setIsMoodSelected] = useState(false)
-    const [moodIntensity, setMoodIntensity] = useState(0)
     const [energyIntensity, setEnergyIntensity] = useState(0)
     const [selectedEmojiIndex, setSelectedEmojiIndex] = useState(-1)
 
-    return(
+    const emojis = [
+        { source: require('../../assets/moodEmojis/great.png'), label: 'Great', color: '#1dbb9e' }, 
+        { source: require('../../assets/moodEmojis/happy.png'), label: 'Happy', color: '#436a14' }, 
+        { source: require('../../assets/moodEmojis/fine.png'), label: 'Fine', color: '#236bfb' }, 
+        { source: require('../../assets/moodEmojis/sad.png'), label: 'Sad', color: '#e18822' }, 
+        { source: require('../../assets/moodEmojis/awful.png'), label: 'Awful', color: '#fd216a' }, 
+        { source: require('../../assets/moodEmojis/angry.png'), label: 'Angry', color: '#fc1d42' }
+    ]
+
+    return (
         <View style={styles.container}>
-            <Text style={{fontSize: 25, fontWeight: 'bold', marginBottom: 10}}>How are you feeling today?</Text>
-        
-            <View style={{flexDirection: "row"}}>
-                <TouchableOpacity key={0} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(0))
-                        setSelectedEmojiIndex(0)
-                    }}>  
-                    <View style={getFaceStyle(0, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {0} source={require('../../assets/moodEmojis/great.png')} />
-                        <Text style={{color: '#1dbb9e', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Great</Text>
-                    </View> 
-                </TouchableOpacity>
-                <TouchableOpacity key={1} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(1))
-                        setSelectedEmojiIndex(1)
-                    }}>  
-                    <View style={getFaceStyle(1, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {1} source={require('../../assets/moodEmojis/happy.png')} />
-                        <Text style={{color: '#436a14', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Happy</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity key={2} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(2))
-                        setSelectedEmojiIndex(2)
-                    }}>  
-                    <View style={getFaceStyle(2, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {2} source={require('../../assets/moodEmojis/fine.png')} />
-                        <Text style={{color: '#236bfb', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Fine</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <View style={{flexDirection: "row"}}>
-                <TouchableOpacity key={3} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(3))
-                        setSelectedEmojiIndex(3)
-                    }}>  
-                    <View style={getFaceStyle(3, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {3} source={require('../../assets/moodEmojis/sad.png')} />
-                        <Text style={{color: '#e18822', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Sad</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity key={4} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(4))
-                        setSelectedEmojiIndex(4)
-                    }}>  
-                    <View style={getFaceStyle(4, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {4} source={require('../../assets/moodEmojis/awful.png')} />
-                        <Text style={{color: '#fd216a', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Awful</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity key={5} onPress={() => {
-                        setIsMoodSelected(getIsMoodSelected(5))
-                        setSelectedEmojiIndex(5)
-                    }}>  
-                    <View style={getFaceStyle(5, selectedEmojiIndex)}>
-                        <Image style={styles.image} key= {5} source={require('../../assets/moodEmojis/angry.png')} />
-                        <Text style={{color: '#fc1d42', fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>Angry</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-            
-            <Text style={styles.sliderQuestion}>How much energy do you have?</Text>
-            {isMoodSelected &&
-                <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={10}
-                    onValueChange={(value) => setMoodIntensity(value)}
-                    step={1}
-                    value={moodIntensity}
-                    maximumTrackTintColor={"#1f1f1e"}
-                    minimumTrackTintColor={"#03fc3d"}
-                    thumbTintColor={"#BEB1A4"}
-                />
-            }
-            {!isMoodSelected &&
-                <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={10}
-                    onValueChange={(value) => setEnergyIntensity(value)}
-                    step={1}
-                    value={energyIntensity}
-                    maximumTrackTintColor={'#1f1f1e'}
-                    minimumTrackTintColor={"#5838B4"}
-                    thumbTintColor={"#BEB1A4"}
-                />
-            }
+            <Text style={{fontSize: 25, fontWeight: 'bold', marginBottom: 10}}>{"How are you feeling today?"}</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginHorizontal: 10}}>
+                {emojis.map((emoji, index) => (
+                    <TouchableOpacity key={index} onPress={() => setSelectedEmojiIndex(index)}>  
+                        <View style={getFaceStyle(index, selectedEmojiIndex)}>
+                            <Image style={styles.image} source={emoji.source} />
+                            <Text style={{color: emoji.color, fontWeight: 'bold', fontSize: 15, textAlign: "center"}}>{emoji.label}</Text>
+                        </View> 
+                    </TouchableOpacity>
+                ))}
+            </View>           
+            <Text style={styles.sliderQuestion}>{"How much energy do you have?"}</Text>
+            <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                onValueChange={(value) => setEnergyIntensity(value)}
+                step={1}
+                value={energyIntensity}
+                maximumTrackTintColor={'#1f1f1e'}
+                minimumTrackTintColor={"#5838B4"}
+                thumbTintColor={"#BEB1A4"}
+            />
             <NotesButton/>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => Alert.alert('Data Saved.')}>
-                <Text style={{color: '#ffffff', fontSize: 20}}>Save Data</Text>
+            <TouchableOpacity style={styles.button} onPress={() => Alert.alert('Data Saved.')}>
+                <Text style={{color: '#ffffff', fontSize: 20}}>{"Save Data"}</Text>
             </TouchableOpacity>
         </View>
     )
-}
-
-function getIsMoodSelected(emojiIndex: number) {
-    var lightningBoltEmojiSelected: boolean
-
-    if (emojiIndex != 5) {
-        lightningBoltEmojiSelected = false
-    } else {
-        lightningBoltEmojiSelected = true
-    }
-
-    return lightningBoltEmojiSelected == false
-}
-
-function getEmojiStyle(emojiIndex: number, selectedEmojiIndex: number): StyleProp<TextStyle> {
-    if (emojiIndex == selectedEmojiIndex) {
-        return styles.selectedEmoji
-    }
-    return styles.unselectedEmoji
 }
 
 function getFaceStyle(emojiIndex: number, selectedEmojiIndex: number): StyleProp<ImageStyle> {
@@ -164,12 +85,6 @@ const styles = StyleSheet.create({
         },
         shadowColor:"#5838B4",
         padding:2
-    },
-    emojiText: {
-        color: 'black',
-        fontWeight: 'bold',
-        fontSize: 15,
-        textAlign: "center"
     },
     sliderQuestion: {
         color: 'black',

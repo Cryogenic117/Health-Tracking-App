@@ -1,5 +1,5 @@
 import React, {useState} from 'react' 
-import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput} from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native'
 import Modal from 'react-native-modal'
 
 export default function NotesButton(): JSX.Element {
@@ -9,30 +9,34 @@ export default function NotesButton(): JSX.Element {
         <TouchableOpacity onPress = {() => setModalVisibility(true)}>
             <Text style = {styles.buttonText}>+ Notes </Text>    
             <Modal isVisible = {isModalVisible}>
-                <View style = {styles.modalContainer} > 
-                    <Text style = {styles.title}>Current Note</Text>
-                    <TextInput 
-                        style = {styles.noteInput}
-                        multiline = {true}
-                        selectionColor = {'#5838B4'}
-                    />
-                    <View style = {styles.buttons}>
-                        <View style = {styles.eachButton}>
-                            <Button 
-                                color = {'#5838B4'}
-                                title = 'Cancel'
-                                onPress = {() => setModalVisibility(false)}                         
-                            />
-                        </View>
-                        <View style = {styles.eachButton}>
-                            <Button                         
-                                color = {'#5838B4'} 
-                                title = 'Save'
-                                onPress = {() => setModalVisibility(false)}
-                            />
-                        </View>
-                    </View>     
-                </View>
+                <KeyboardAvoidingView style = {{flex: 1}} behavior = "padding">
+                    <View style = {styles.modalContainer} > 
+                            <Text style = {styles.title}>Current Note</Text>  
+                            <ScrollView>                      
+                                <TextInput 
+                                    style = {styles.noteInput}
+                                    multiline = {true}
+                                    selectionColor = {'#5838B4'}
+                                />
+                            </ScrollView>
+                        <View style = {styles.buttons}>
+                            <View style = {styles.eachButton}>
+                                <Button 
+                                    color = {'#5838B4'}
+                                    title = 'Cancel'
+                                    onPress = {() => setModalVisibility(false)}                         
+                                />
+                            </View>
+                            <View style = {styles.eachButton}>
+                                <Button                         
+                                    color = {'#5838B4'} 
+                                    title = 'Save'
+                                    onPress = {() => setModalVisibility(false)}
+                                />
+                            </View>
+                        </View>     
+                    </View>
+                </KeyboardAvoidingView>
             </Modal>
         </TouchableOpacity>
     )
@@ -72,7 +76,9 @@ const styles = StyleSheet.create({
     buttons:{
         flex: 0.75,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        bottom: 80,
+        position: 'relative'
     }
 })
 

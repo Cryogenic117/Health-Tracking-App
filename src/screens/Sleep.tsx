@@ -12,7 +12,7 @@ const radioButtonsData: RadioButtonProps[] = [{
     label: "Very Little (3 hours or less)",
     value: "Very Little (3 hours or less)",
     size: 30,
-    labelStyle: {color: '#B71C1C', fontSize: 20, fontWeight: 'bold'}
+    labelStyle: {color: '#800020', fontSize: 20, fontWeight: 'bold'}
 }, 
 {
     id: 'btn2',
@@ -20,7 +20,7 @@ const radioButtonsData: RadioButtonProps[] = [{
     value: "Some (4 to 5 hours)",
     size: 30,
     containerStyle: {marginTop: 20},
-    labelStyle: {color: '#FFC107', fontSize: 20, fontWeight: 'bold'}
+    labelStyle: {color: '#EDB100', fontSize: 20, fontWeight: 'bold'}
 },   
 {
     id: 'btn3',
@@ -28,12 +28,12 @@ const radioButtonsData: RadioButtonProps[] = [{
     value: "A Good Amount (6 to 7 hours)",
     size: 30,
     containerStyle: {marginTop: 20},
-    labelStyle: {color: '#43A047', fontSize: 20, fontWeight: 'bold'}
+    labelStyle: {color: '#2a8000', fontSize: 20, fontWeight: 'bold'}
 },
 {
     id: 'btn4',
-    label: "A lot (7 to 9 hours)",
-    value: "A lot (7 to 9 hours)",
+    label: "A lot (8 to 9 hours)",
+    value: "A lot (8 to 9 hours)",
     size: 30,
     containerStyle: {marginTop: 20},
     labelStyle: {color: '#1B5E20', fontSize: 20, fontWeight: 'bold'}
@@ -44,13 +44,14 @@ const radioButtonsData: RadioButtonProps[] = [{
     value: "Excessive (Over 9 hours)",
     size: 30,
     containerStyle: {marginTop: 20},
-    labelStyle: {color: '#FFC107', fontSize: 20, fontWeight: 'bold'}
+    labelStyle: {color: '#EDB100', fontSize: 20, fontWeight: 'bold'}
 }]
 
 let selectedButton
 let data = []
 export default function Sleep(): JSX.Element {
     const [sliderValue, tempValue] = useState(1)
+
     const onPress = async () => {
         data[0] = selectedButton
         data[1] = sliderValue
@@ -69,8 +70,10 @@ export default function Sleep(): JSX.Element {
             }
         }
     }
+
     const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
-    function onPressRadioButton(radioButtonsArray: RadioButtonProps[]) {
+
+    const onPressRadioButton = (radioButtonsArray: RadioButtonProps[]) => {
         setRadioButtons(radioButtonsArray)
         radioButtonsArray.forEach(
             function (button) {
