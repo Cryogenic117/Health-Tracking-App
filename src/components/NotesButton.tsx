@@ -11,7 +11,7 @@ export default function NotesButton(): JSX.Element {
             <Modal isVisible = {isModalVisible}>
                 <View style = {styles.modalContainer} > 
                         <Text style = {styles.title}>Notes</Text>  
-                        <View style={{borderWidth: .75, flex: 1}}>
+                        <View style={{borderWidth: 1, flex: 1}}>
                             <ScrollView>                      
                                 <TextInput 
                                     style = {styles.noteInput}
@@ -23,14 +23,14 @@ export default function NotesButton(): JSX.Element {
                     <View style = {styles.buttons}>
                         <View style = {styles.eachButton}>
                             <Button 
-                                color = {'#2596be'}
+                                color = {'#5838B4'}
                                 title = 'Cancel'
                                 onPress = {() => setModalVisibility(false)}                         
                             />
                         </View>
                         <View style = {styles.eachButton}>
                             <Button                         
-                                color = {'#2596be'} 
+                                color = {'#5838B4'} 
                                 title = 'Save'
                                 onPress = {() => setModalVisibility(false)}
                             />
