@@ -1,5 +1,5 @@
 import React, {useState} from 'react' 
-import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View, Button, TextInput, ScrollView } from 'react-native'
 import Modal from 'react-native-modal'
 
 export default function NotesButton(): JSX.Element {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1, 
-        backgroundColor: 'white', 
+        backgroundColor: 'black', 
         padding: 15, 
         borderRadius: 10, 
         justifyContent: 'space-between'
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 23,
         textAlign: 'center',
-        color: 'black'
+        color: 'white'
     },
     eachButton: {
         flex: 1,
