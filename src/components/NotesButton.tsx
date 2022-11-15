@@ -6,11 +6,11 @@ export default function NotesButton(): JSX.Element {
     const [isModalVisible, setModalVisibility] = useState(false)
 
     return (
-        <TouchableOpacity onPress = {() => setModalVisibility(true)}>
-            <Text style = {styles.buttonText}>+ Notes </Text>    
-            <Modal isVisible = {isModalVisible}>
-                <View style = {styles.modalContainer} > 
-                        <Text style = {styles.title}>Notes</Text>  
+        <TouchableOpacity onPress={() => setModalVisibility(true)}>
+            <Text style={styles.buttonText}>+ Notes</Text>    
+            <Modal isVisible={isModalVisible}>
+                <View style={styles.modalContainer} > 
+                        <Text style={styles.title}>Notes</Text>  
                         <View style={{borderWidth: 1, flex: 1}}>
                             <ScrollView>                      
                                 <TextInput 
@@ -20,19 +20,19 @@ export default function NotesButton(): JSX.Element {
                                 />
                             </ScrollView>
                         </View> 
-                    <View style = {styles.buttons}>
-                        <View style = {styles.eachButton}>
+                    <View style={styles.buttons}>
+                        <View style={styles.eachButton}>
                             <Button 
                                 color = {'#5838B4'}
                                 title = 'Cancel'
-                                onPress = {() => setModalVisibility(false)}                         
+                                onPress={() => setModalVisibility(false)}                         
                             />
                         </View>
-                        <View style = {styles.eachButton}>
+                        <View style={styles.eachButton}>
                             <Button                         
                                 color = {'#5838B4'} 
                                 title = 'Save'
-                                onPress = {() => setModalVisibility(false)}
+                                onPress={() => setModalVisibility(false)}
                             />
                         </View>
                     </View>     
