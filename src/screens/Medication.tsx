@@ -128,6 +128,9 @@ export default function Medication(): JSX.Element {
                     <View style={{flex:1}}>
                         <Text style={{alignSelf: 'center', fontSize: 30}}>{"Your Medications"}</Text>
                         <ScrollView style={{flex: 5}}>
+                            {userMedications.length == 0 &&
+                                <Text style={{fontSize: 16, marginLeft: 10, marginTop: 25}}>{"No Current Medications."}</Text>   
+                            } 
                             {userMedications.map((medName, index) => (
                                 <View key={index} style={{paddingVertical: 10, paddingLeft: 15}}>
                                     <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
