@@ -41,7 +41,7 @@ export default function MoodAndEnergy(): JSX.Element {
                 minimumTrackTintColor={"#5838B4"}
                 thumbTintColor={"#BEB1A4"}
             />
-            <NotesButton/>
+            <NotesButton feature='moodAndEnergy'/>
             <TouchableOpacity style={styles.button} onPress={() => Alert.alert('Data Saved.')}>
                 <Text style={{color: '#ffffff', fontSize: 20}}>{"Save Data"}</Text>
             </TouchableOpacity>

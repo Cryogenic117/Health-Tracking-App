@@ -134,7 +134,7 @@ export default function Medication(): JSX.Element {
                             {userMedications.map((medName, index) => (
                                 <View key={index} style={{paddingVertical: 10, paddingLeft: 15}}>
                                     <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
-                                    <NotesButton/>
+                                    <NotesButton feature='medication' medicationID=''/>
                                 </View>
                             ))}
                         </ScrollView>

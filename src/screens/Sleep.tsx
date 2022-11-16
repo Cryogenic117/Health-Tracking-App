@@ -87,15 +87,15 @@ export default function Sleep(): JSX.Element {
 
     return (
         <View style={styles.sleepScreenView}>
-            <Text style = {styles.question}>How much did you sleep today?</Text>
+            <Text style={styles.question}>{"How much did you sleep today?"}</Text>
             <RadioGroup
                 containerStyle={styles.buttons}
-                radioButtons = {radioButtons}
-                onPress = {onPressRadioButton}
+                radioButtons={radioButtons}
+                onPress={onPressRadioButton}
             />
-            <NotesButton />
+            <NotesButton feature='sleep'/>
             <View style={styles.sliderText}>
-                <Text style={styles.text}>How was your sleep quality?</Text>
+                <Text style={styles.text}>{"How was your sleep quality?"}</Text>
             </View>
             <View style={styles.sliderView}>
                 <Slider
@@ -113,7 +113,7 @@ export default function Sleep(): JSX.Element {
             <TouchableOpacity
                 style={styles.Button}
                 onPress={onPress}>
-                <Text style={styles.buttonText}>Save Data</Text>
+                <Text style={styles.buttonText}>{"Save Data"}</Text>
             </TouchableOpacity>
         </View>
     )
