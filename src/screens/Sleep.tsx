@@ -56,18 +56,46 @@ export default function Sleep(): JSX.Element {
         data[0] = selectedButton
         data[1] = sliderValue
         console.log("Sleep Screen: Attempting to save data " + data[0] + " " + data[1])
+
         if (data[0] != null && data[1] != null) {
-            try {
-                const key = moment().format("DD/MM/YYYY")
-                const entry = JSON.stringify(data)
-                console.log("Sleep Screen: Setting key, value as " + key + " " + entry)
-                await AsyncStorage.setItem(key, entry)
-                console.log("Sleep Screen: Save Successful")
-                Alert.alert("Data successfully saved for " + key)
-            } catch (e) {
+            try{
+                const key = "sleepScreen"
+                let hash = await AsyncStorage.getItem(key)
+                const date = moment().format("DD/MM/YYYY")
+                if(hash == null){
+                    console.log("sleepScreen: Hash empty generating new hash")
+                    let newHash = {
+                        date: data
+                    }
+                    console.log("sleepScreen: Hash generated saving as "+ date+" "+data)
+                    const entry = JSON.stringify(newHash)
+                    try {
+                        await AsyncStorage.setItem(key,entry)
+                        console.log("sleepScreen: Save Successful")
+                        Alert.alert("Data successfully saved")
+                    }catch (e) {
+                        Alert.alert("There was an error saving")
+                        console.log("sleepScreen: Save failed - error: "+e)
+                    }
+                } else {r
+                    let newHash = JSON.parse(hash)
+                    newHash[date] = data
+                    const entry = JSON.stringify(newHash)
+                    try {
+                        await AsyncStorage.setItem(key,entry)
+                        console.log("sleepScreen: Hash edited saving as "+date+" "+data)
+                        Alert.alert("Data Successfully saved")
+                    } catch (e) {
+                        Alert.alert("There was an error saving")
+                        console.log("sleepScreen: Save failed - error "+e)
+                    }
+                }
+            }catch (e) {
                 Alert.alert("There was an error saving")
-                console.log("Sleep Screen: Save failed - error: "+e)
+                console.log("moodAndEnergyScreen: Save failed - error "+e)
             }
+        } else {
+            Alert.alert("Error: Data not entered please try again")
         }
     }
 
