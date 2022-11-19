@@ -77,7 +77,7 @@ export default function Sleep(): JSX.Element {
                         Alert.alert("There was an error saving")
                         console.log("sleepScreen: Save failed - error: "+e)
                     }
-                } else {r
+                } else {
                     let newHash = JSON.parse(hash)
                     newHash[date] = data
                     const entry = JSON.stringify(newHash)
