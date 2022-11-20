@@ -77,13 +77,6 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: '#5838B4',
         borderRadius: 10,
-        ShadowRadius: 100,
-        shadowOpacity: .8,
-        shadowOffset: {
-            height: 10,
-            width: 10
-        },
-        shadowColor:"#5838B4",
         padding:2
     },
     sliderQuestion: {
