@@ -12,39 +12,39 @@ const radioButtonsData: RadioButtonProps[] = [{
     label: "Very Little (3 hours or less)",
     value: "Very Little (3 hours or less)",
     size: 30,
-    labelStyle: {color: '#800020', fontSize: 20, fontWeight: 'bold'}
-}, 
+    labelStyle: { color: '#800020', fontSize: 20, fontWeight: 'bold' }
+},
 {
     id: 'btn2',
     label: "Some (4 to 5 hours)",
     value: "Some (4 to 5 hours)",
     size: 30,
-    containerStyle: {marginTop: 20},
-    labelStyle: {color: '#EDB100', fontSize: 20, fontWeight: 'bold'}
-},   
+    containerStyle: { marginTop: 20 },
+    labelStyle: { color: '#EDB100', fontSize: 20, fontWeight: 'bold' }
+},
 {
     id: 'btn3',
     label: "A Good Amount (6 to 7 hours)",
     value: "A Good Amount (6 to 7 hours)",
     size: 30,
-    containerStyle: {marginTop: 20},
-    labelStyle: {color: '#2a8000', fontSize: 20, fontWeight: 'bold'}
+    containerStyle: { marginTop: 20 },
+    labelStyle: { color: '#2a8000', fontSize: 20, fontWeight: 'bold' }
 },
 {
     id: 'btn4',
     label: "A lot (8 to 9 hours)",
     value: "A lot (8 to 9 hours)",
     size: 30,
-    containerStyle: {marginTop: 20},
-    labelStyle: {color: '#1B5E20', fontSize: 20, fontWeight: 'bold'}
+    containerStyle: { marginTop: 20 },
+    labelStyle: { color: '#1B5E20', fontSize: 20, fontWeight: 'bold' }
 },
 {
     id: 'btn5',
     label: "Excessive (Over 9 hours)",
     value: "Excessive (Over 9 hours)",
     size: 30,
-    containerStyle: {marginTop: 20},
-    labelStyle: {color: '#EDB100', fontSize: 20, fontWeight: 'bold'}
+    containerStyle: { marginTop: 20 },
+    labelStyle: { color: '#EDB100', fontSize: 20, fontWeight: 'bold' }
 }]
 
 let selectedButton
@@ -56,18 +56,47 @@ export default function Sleep(): JSX.Element {
         data[0] = selectedButton
         data[1] = sliderValue
         console.log("Sleep Screen: Attempting to save data " + data[0] + " " + data[1])
+
         if (data[0] != null && data[1] != null) {
             try {
-                const key = moment().format("DD/MM/YYYY")
-                const entry = JSON.stringify(data)
-                console.log("Sleep Screen: Setting key, value as " + key + " " + entry)
-                await AsyncStorage.setItem(key, entry)
-                console.log("Sleep Screen: Save Successful")
-                Alert.alert("Data successfully saved for " + key)
+                const key = "sleepScreen"
+                let hash = await AsyncStorage.getItem(key)
+                const date = moment().format("DD/MM/YYYY")
+
+                if (hash == null) {
+                    console.log("sleepScreen: Hash empty generating new hash")
+                    let newHash = { date: data }
+                    console.log("sleepScreen: Hash generated saving as " + date + " " + data)
+                    const entry = JSON.stringify(newHash)
+
+                    try {
+                        await AsyncStorage.setItem(key, entry)
+                        console.log("sleepScreen: Save Successful")
+                        Alert.alert("Data successfully saved")
+                    } catch (e) {
+                        Alert.alert("There was an error saving")
+                        console.log("sleepScreen: Save failed - error: " + e)
+                    }
+                } else {
+                    let newHash = JSON.parse(hash)
+                    newHash[date] = data
+                    const entry = JSON.stringify(newHash)
+
+                    try {
+                        await AsyncStorage.setItem(key, entry)
+                        console.log("sleepScreen: Hash edited saving as " + date + " " + data)
+                        Alert.alert("Data Successfully saved")
+                    } catch (e) {
+                        Alert.alert("There was an error saving")
+                        console.log("sleepScreen: Save failed - error " + e)
+                    }
+                }
             } catch (e) {
                 Alert.alert("There was an error saving")
-                console.log("Sleep Screen: Save failed - error: "+e)
+                console.log("moodAndEnergyScreen: Save failed - error " + e)
             }
+        } else {
+            Alert.alert("Error: Data not entered please try again")
         }
     }
 
@@ -75,14 +104,12 @@ export default function Sleep(): JSX.Element {
 
     const onPressRadioButton = (radioButtonsArray: RadioButtonProps[]) => {
         setRadioButtons(radioButtonsArray)
-        radioButtonsArray.forEach(
-            function (button) {
-                if (button.selected == true) {
-                   selectedButton = button.id
-                   return selectedButton
-                }
+        radioButtonsArray.forEach((button) => {
+            if (button.selected == true) {
+                selectedButton = button.id
+                return selectedButton
             }
-        )
+        })
     }
 
     return (
@@ -102,7 +129,7 @@ export default function Sleep(): JSX.Element {
                     style={styles.slider}
                     minimumValue={1}
                     maximumValue={10}
-                    onValueChange={(value)=>tempValue(value)}
+                    onValueChange={(value) => tempValue(value)}
                     step={1}
                     value={sliderValue}
                     maximumTrackTintColor={"#1f1f1e"}
@@ -127,7 +154,7 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     buttonText: {
-      color: '#ffffff'
+        color: '#ffffff'
     },
     Button: {
         alignItems: "center",
@@ -140,7 +167,7 @@ const styles = StyleSheet.create({
     blackBar: {
         backgroundColor: 'black',
         height: 2,
-        width: 225, 
+        width: 225,
         margin: 50
     },
     sleepScreenView: {
