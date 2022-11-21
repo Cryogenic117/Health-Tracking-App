@@ -20,9 +20,9 @@ export default function Medication(): JSX.Element {
 	const [results, setResults] = useState(null)
 	const [textEditable, setTextEditable] = useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
-    const [selectedMedication, setSelectedMedication] = useState("")
+    const [selectedMedication, setSelectedMedication] = useState({name: '', id: ''})
     const [showModal, setShowModal] = useState(false)
-    const [userMedications, setUserMedications] = useState<string[]>([])
+    const [userMedications, setUserMedications] = useState<DisplayMedicationModel[]>([])
     const [text,setText] = useState("")
 
     const search = () => {
@@ -54,7 +54,7 @@ export default function Medication(): JSX.Element {
                 <TouchableOpacity 
                     key={item.id} 
                     onPress={() => 
-                        resultPressed(item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].substr(1).toLowerCase())
+                        searchResultPressed(item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].substr(1).toLowerCase())
                     }
                 >
                     <View style={styles.item}>
@@ -70,11 +70,16 @@ export default function Medication(): JSX.Element {
         })
     }
 
-    const resultPressed = (medName) => {
-        setSelectedMedication(medName)
+    const searchResultPressed = (medName) => {        
+        const medID: string = generateNewMedicationID()
+        setSelectedMedication({name: medName, id: medID})
         setText("")
         setResults(null)
         setShowModal(true)
+    }
+
+    const generateNewMedicationID = () => {
+        return `${Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1)}`
     }
     
     const medicationModalCancelToggle = () => {
@@ -85,16 +90,15 @@ export default function Medication(): JSX.Element {
         userMedications.push(selectedMedication)
         setShowModal(!showModal)
         setSearchActive(false)
-        storeMedicationData(medication)
+        storeMedicationData(medication, selectedMedication.id)
     }
 
-    const storeMedicationData = async (medication: MedicationModel) => {
-        const key: number = Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1);
+    const storeMedicationData = async (medication: MedicationModel, id: string) => {
         try {
             const jsonValue = JSON.stringify(medication)
-            await AsyncStorage.setItem(`${key}`, jsonValue)
+            await AsyncStorage.setItem(`${id}`, jsonValue)
         } catch (e) {
-            console.log(`There was an error saving the medication (key: ${key}): ${e}`)
+            console.log(`There was an error saving the medication (key: ${id}): ${e}`)
         }
     }
 
@@ -131,21 +135,19 @@ export default function Medication(): JSX.Element {
                             {userMedications.length == 0 &&
                                 <Text style={{fontSize: 16, marginLeft: 10, marginTop: 25}}>{"No Current Medications."}</Text>   
                             } 
-                            {userMedications.map((medName, index) => (
+                            {userMedications.map((med, index) => (
                                 <View key={index} style={{paddingVertical: 10, paddingLeft: 15}}>
-                                    <Text key={medName} style={{fontSize: 20, paddingBottom: 5}}>{medName}</Text>
-                                    <NotesButton feature='medication' medicationID=''/>
+                                    <Text key={med.name} style={{fontSize: 20, paddingBottom: 5}}>{med.name}</Text>
+                                    <NotesButton feature='medication' medicationID={med.id}/>
                                 </View>
                             ))}
                         </ScrollView>
                     </View>
                 }
-                <ScrollView style={{flex:8}}>
-                        {results}
-                </ScrollView>
+                <ScrollView style={{flex:8}}>{results}</ScrollView>
             </View>
             <NewMedicationModal 
-                medicationName={selectedMedication} 
+                medicationName={selectedMedication.name} 
                 cancelToggle={medicationModalCancelToggle}
                 saveToggle={medicationModalSaveToggle}
                 isOpen={showModal}

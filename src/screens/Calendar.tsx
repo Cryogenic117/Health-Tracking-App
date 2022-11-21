@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { StatusBar, SafeAreaView, StyleSheet, Text, ScrollView, Image } from 'react-native'
 import { Agenda, CalendarProvider } from 'react-native-calendars'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Calendar(): JSX.Element {
     var date = new Date()
@@ -29,6 +30,15 @@ export default function Calendar(): JSX.Element {
         </SafeAreaView>
     )
 }
+
+async function getMedicationData(medicationID: string) {
+    try {
+        const jsonValue = await AsyncStorage.getItem(medicationID)
+        return jsonValue != null ? JSON.parse(jsonValue) : null
+    } catch(e) {
+        console.log("There was an error retrieving the medication model: " + e)
+    }
+  }
 
 function DailyData(day): JSX.Element {
     const monthNames: string[] = [
