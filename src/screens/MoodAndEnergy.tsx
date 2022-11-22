@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert, StyleProp, Image, ImageStyle } from 'react-native'
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import Slider from '@react-native-community/slider'
-import NotesButton from '../components/NotesButton'
 import moment from "moment"
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from 'react'
+import { Alert, Image, ImageStyle, StyleProp, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import NotesButton from '../components/NotesButton'
 
 export default function MoodAndEnergy(): JSX.Element {
     const [energyIntensity, setEnergyIntensity] = useState(0)
@@ -23,7 +23,7 @@ export default function MoodAndEnergy(): JSX.Element {
 
                 if (hash == null) {
                     console.log("moodAndEnergyScreen: Hash empty generating new hash")
-                    let newHash = {date: data}
+                    let newHash = { date: data }
                     console.log("moodAndEnergyScreen: Hash generated saving as " + date + " " + data)
                     const entry = JSON.stringify(newHash)
 
@@ -92,7 +92,7 @@ export default function MoodAndEnergy(): JSX.Element {
                 minimumTrackTintColor={"#5838B4"}
                 thumbTintColor={"#BEB1A4"}
             />
-            <NotesButton />
+            <NotesButton parentKey='moodAndEnergyScreen' />
             <TouchableOpacity style={styles.button} onPress={onPress}>
                 <Text style={{ color: '#ffffff', fontSize: 20 }}>{"Save Data"}</Text>
             </TouchableOpacity>

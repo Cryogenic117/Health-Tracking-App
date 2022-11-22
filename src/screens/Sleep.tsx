@@ -1,10 +1,9 @@
-import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
-import Slider from '@react-native-community/slider'
-import { useState } from "react"
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Slider from '@react-native-community/slider'
 import moment from "moment"
+import React, { useState } from 'react'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
 import NotesButton from '../components/NotesButton'
 
 const radioButtonsData: RadioButtonProps[] = [{
@@ -120,7 +119,7 @@ export default function Sleep(): JSX.Element {
                 radioButtons={radioButtons}
                 onPress={onPressRadioButton}
             />
-            <NotesButton feature='sleep'/>
+            <NotesButton parentKey='sleepScreen' />
             <View style={styles.sliderText}>
                 <Text style={styles.text}>{"How was your sleep quality?"}</Text>
             </View>

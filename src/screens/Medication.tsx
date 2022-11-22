@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useState } from 'react'
 import {
     ActivityIndicator,
@@ -14,16 +15,35 @@ import {
 } from 'react-native'
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Medication(): JSX.Element {
-	const [results, setResults] = useState(null)
-	const [textEditable, setTextEditable] = useState(true)
+    const [results, setResults] = useState(null)
+    const [textEditable, setTextEditable] = useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
-    const [selectedMedication, setSelectedMedication] = useState({name: '', id: ''})
+    const [selectedMedication, setSelectedMedication] = useState({ name: '', id: '' })
     const [showModal, setShowModal] = useState(false)
-    const [userMedications, setUserMedications] = useState<DisplayMedicationModel[]>([])
-    const [text,setText] = useState("")
+    const [text, setText] = useState("")
+    const [userMedications, setUserMedications] = useState([])
+
+    const updateUserMedications = async () => {
+        let tempUserMedications: MedicationModel[] = []
+        try {
+            let medicationScreenHash: string = await AsyncStorage.getItem('medicationScreen')
+            if (medicationScreenHash != null) {
+                let parsedMedicationScreen: Object = JSON.parse(medicationScreenHash)
+                Object.values(parsedMedicationScreen).forEach((value) => {
+                    let medication: MedicationModel = JSON.parse(value)
+                    tempUserMedications.push(medication)
+                })
+            } else {
+                console.log("The user medication list was updated but the hash was empty.")
+            }
+        } catch (e) {
+            console.log("There was an error getting the list of user medications: " + e)
+        } finally {
+            setUserMedications(tempUserMedications)
+        }
+    }
 
     const search = () => {
         const currentQuery = text
@@ -42,7 +62,7 @@ export default function Medication(): JSX.Element {
                     setResults(itemsToRender)
                 })
                 .then(() => setTextEditable(true))
-        } catch(error) {
+        } catch (error) {
             const errorText = <Text style={styles.error}>{"There was an error, try again."}</Text>
             setResults(errorText)
         }
@@ -51,9 +71,9 @@ export default function Medication(): JSX.Element {
     const getItems = (data) => {
         return data.results.map((item) => {
             return (
-                <TouchableOpacity 
-                    key={item.id} 
-                    onPress={() => 
+                <TouchableOpacity
+                    key={item.id}
+                    onPress={() =>
                         searchResultPressed(item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].substr(1).toLowerCase())
                     }
                 >
@@ -70,9 +90,9 @@ export default function Medication(): JSX.Element {
         })
     }
 
-    const searchResultPressed = (medName) => {        
+    const searchResultPressed = (medName) => {
         const medID: string = generateNewMedicationID()
-        setSelectedMedication({name: medName, id: medID})
+        setSelectedMedication({ name: medName, id: medID })
         setText("")
         setResults(null)
         setShowModal(true)
@@ -81,22 +101,33 @@ export default function Medication(): JSX.Element {
     const generateNewMedicationID = () => {
         return `${Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1)}`
     }
-    
+
     const medicationModalCancelToggle = () => {
         setShowModal(!showModal)
     }
 
     const medicationModalSaveToggle = (medication: MedicationModel) => {
-        userMedications.push(selectedMedication)
         setShowModal(!showModal)
         setSearchActive(false)
         storeMedicationData(medication, selectedMedication.id)
+        updateUserMedications()
     }
 
     const storeMedicationData = async (medication: MedicationModel, id: string) => {
         try {
-            const jsonValue = JSON.stringify(medication)
-            await AsyncStorage.setItem(`${id}`, jsonValue)
+            let parentHash: string = await AsyncStorage.getItem("medicationScreen")
+            let medicationHash: string = JSON.stringify(medication)
+            let parsedParentHash: Object
+            if (parentHash == null) {
+                parsedParentHash = {
+                    id: medicationHash
+                }
+            } else {
+                parsedParentHash = JSON.parse(parentHash)
+                parsedParentHash[id] = medicationHash
+            }
+            let newEntry: string = JSON.stringify(parsedParentHash)
+            await AsyncStorage.setItem("medicationScreen", newEntry)
         } catch (e) {
             console.log(`There was an error saving the medication (key: ${id}): ${e}`)
         }
@@ -111,13 +142,13 @@ export default function Medication(): JSX.Element {
 
     return (
         <SafeAreaView style={styles.androidSafeArea}>
-            <SafeAreaView style={{flex: 1, margin: 10, alignSelf: 'center', alignContent:"center", flexDirection:"row"}}>
-                <TextInput 
+            <SafeAreaView style={{ flex: 1, margin: 10, alignSelf: 'center', alignContent: "center", flexDirection: "row" }}>
+                <TextInput
                     onChangeText={value => setText(value)}
                     onPressIn={() => setSearchActive(true)}
                     autoCorrect={false}
                     value={text}
-                    onSubmitEditing={()=> search()}
+                    onSubmitEditing={() => search()}
                     editable={textEditable}
                     placeholder="Add a medication"
                     clearButtonMode='always'
@@ -127,27 +158,27 @@ export default function Medication(): JSX.Element {
                     <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>{"C A N C E L"}</Text>
                 }
             </SafeAreaView>
-            <View style={{flex: 9}}>
+            <View style={{ flex: 9 }}>
                 {!isSearchActive &&
-                    <View style={{flex:1}}>
-                        <Text style={{alignSelf: 'center', fontSize: 30}}>{"Your Medications"}</Text>
-                        <ScrollView style={{flex: 5}}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={{ alignSelf: 'center', fontSize: 30 }}>{"Your Medications"}</Text>
+                        <ScrollView style={{ flex: 5 }}>
                             {userMedications.length == 0 &&
-                                <Text style={{fontSize: 16, marginLeft: 10, marginTop: 25}}>{"No Current Medications."}</Text>   
-                            } 
+                                <Text style={{ fontSize: 16, marginLeft: 10, marginTop: 25 }}>{"No Current Medications."}</Text>
+                            }
                             {userMedications.map((med, index) => (
-                                <View key={index} style={{paddingVertical: 10, paddingLeft: 15}}>
-                                    <Text key={med.name} style={{fontSize: 20, paddingBottom: 5}}>{med.name}</Text>
-                                    <NotesButton feature='medication' medicationID={med.id}/>
+                                <View key={index} style={{ paddingVertical: 10, paddingLeft: 15 }}>
+                                    <Text key={med.name} style={{ fontSize: 20, paddingBottom: 5 }}>{med.name}</Text>
+                                    <NotesButton parentKey='medicationScreen' medicationID={med.id} />
                                 </View>
                             ))}
                         </ScrollView>
                     </View>
                 }
-                <ScrollView style={{flex:8}}>{results}</ScrollView>
+                <ScrollView style={{ flex: 8 }}>{results}</ScrollView>
             </View>
-            <NewMedicationModal 
-                medicationName={selectedMedication.name} 
+            <NewMedicationModal
+                medicationName={selectedMedication.name}
                 cancelToggle={medicationModalCancelToggle}
                 saveToggle={medicationModalSaveToggle}
                 isOpen={showModal}
@@ -161,10 +192,10 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 24
     },
-	drugName: {
-		fontSize: 16,
-		fontWeight: "bold",
-	},
+    drugName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
     drugInfo: {
         fontSize: 12
     },
@@ -175,22 +206,22 @@ const styles = StyleSheet.create({
         padding: 15
     },
     search: {
-        maxHeight: 50, 
-        minHeight: 50, 
-        maxWidth: '95%', 
-        flex: 8, 
-        textAlign: "center", 
-        backgroundColor: "white", 
+        maxHeight: 50,
+        minHeight: 50,
+        maxWidth: '95%',
+        flex: 8,
+        textAlign: "center",
+        backgroundColor: "white",
         borderRadius: 10,
         borderWidth: 1.5,
         borderColor: '#d3d3d3'
     },
     cancel: {
         paddingTop: 12.5,
-        maxHeight: 50, 
-        minHeight: 50, 
-        maxWidth: '95%', 
-        flex: 2, 
+        maxHeight: 50,
+        minHeight: 50,
+        maxWidth: '95%',
+        flex: 2,
         textAlign: "center",
         color: 'black'
     },
