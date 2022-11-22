@@ -8,14 +8,13 @@ import NotesButton from '../components/NotesButton'
 export default function MoodAndEnergy(): JSX.Element {
     const [energyIntensity, setEnergyIntensity] = useState(0)
     const [selectedEmojiIndex, setSelectedEmojiIndex] = useState(-1)
-    let data = []
 
     const onPress = async () => {
-        data[0] = emojis[selectedEmojiIndex].label == undefined ? null : emojis[selectedEmojiIndex].label
-        data[1] = energyIntensity == undefined ? null : energyIntensity
-        console.log("Mood and Energy Screen attempting to save data " + data[0] + " " + data[1])
+        let data0 = emojis[selectedEmojiIndex].label == undefined ? null : emojis[selectedEmojiIndex].label
+        let data1 = energyIntensity == undefined ? null : energyIntensity
+        console.log("Mood and Energy Screen attempting to save data " + data0 + " " + data1)
 
-        if (data[0] != null && data[1] != null) {
+        if (data0 != null && data1 != null) {
             try {
                 const key = "moodAndEnergyScreen"
                 const date = moment().format("DD/MM/YYYY")
@@ -23,8 +22,8 @@ export default function MoodAndEnergy(): JSX.Element {
 
                 if (hash == null) {
                     console.log("moodAndEnergyScreen: Hash empty generating new hash")
-                    let newHash = { date: data }
-                    console.log("moodAndEnergyScreen: Hash generated saving as " + date + " " + data)
+                    let newHash = { date: [data0, data1, ""] }
+                    console.log("moodAndEnergyScreen: Hash generated saving as " + date + " " + [data0, data1, ""])
                     const entry = JSON.stringify(newHash)
 
                     try {
@@ -37,12 +36,16 @@ export default function MoodAndEnergy(): JSX.Element {
                     }
                 } else {
                     let newHash = JSON.parse(hash)
-                    newHash[date] = data
+                    if (newHash[date] != null) {
+                        newHash[date] = [data0, data1, newHash[date][2]]
+                    } else {
+                        newHash[date] = [data0, data1, ""]
+                    }
                     const entry = JSON.stringify(newHash)
 
                     try {
                         await AsyncStorage.setItem(key, entry)
-                        console.log("moodAndEnergyScreen: Hash edited saving as " + date + " " + data)
+                        console.log("moodAndEnergyScreen: Hash edited saving as " + date + " " + newHash[date])
                         Alert.alert("Data Successfully saved")
                     } catch (e) {
                         Alert.alert("There was an error saving")

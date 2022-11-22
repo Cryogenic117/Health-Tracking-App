@@ -31,16 +31,60 @@ export default function Calendar(): JSX.Element {
     )
 }
 
-async function getMedicationData(medicationID: string) {
+async function getListOfUserMedications(): Promise<MedicationModel[]> {
     try {
-        const jsonValue = await AsyncStorage.getItem(medicationID)
-        return jsonValue != null ? JSON.parse(jsonValue) : null
-    } catch(e) {
-        console.log("There was an error retrieving the medication model: " + e)
+        let medicationScreenHash: string = await AsyncStorage.getItem('medicationScreen')
+        if (medicationScreenHash != null) {
+            let parsedMedicationScreen: Object = JSON.parse(medicationScreenHash)
+            return Object.values(parsedMedicationScreen)
+        } else {
+            console.log("The medications screen hash is empty.")
+        }
+    } catch (e) {
+        console.log("There was an error getting the list of user medications: " + e)
     }
-  }
+}
+
+async function getSleepDataForDate(date: string): Promise<[]> {
+    try {
+        let sleepScreenHash: string = await AsyncStorage.getItem('sleepScreen')
+        if (sleepScreenHash != null) {
+            let parsedSleepScreenHash: Object = JSON.parse(sleepScreenHash)
+            return parsedSleepScreenHash[date]
+        } else {
+            console.log("The sleep screen hash is empty.")
+        }
+    } catch (e) {
+        console.log("There was an error getting the sleep screen data: " + e)
+    }
+}
+
+async function getMoodAndEnergyDataForDate(date: string): Promise<[]> {
+    try {
+        let moodAndEnergyScreenHash: string = await AsyncStorage.getItem('moodAndEnergyScreen')
+        if (moodAndEnergyScreenHash != null) {
+            let parsedMoodAndEnergyScreenHash: Object = JSON.parse(moodAndEnergyScreenHash)
+            return parsedMoodAndEnergyScreenHash[date]
+        } else {
+            console.log("The mood and energy screen hash is empty.")
+        }
+    } catch (e) {
+        console.log("There was an error getting the mood and energy screen data: " + e)
+    }
+}
 
 function DailyData(day): JSX.Element {
+
+
+    // NOTE TO BRANDON: 
+    // Delete these lines when you do your code! This is just to show you examples of how to access the data you need.
+    // Change the date that I passed in to see the data for different days!
+
+    getListOfUserMedications().then((listOfUserMedications) => console.log(listOfUserMedications[0]))
+    getSleepDataForDate('22/11/2022').then((data) => console.log(data))
+    getMoodAndEnergyDataForDate('22/11/2022').then((data) => console.log(data))
+
+
     const monthNames: string[] = [
         "January",
         "February", 

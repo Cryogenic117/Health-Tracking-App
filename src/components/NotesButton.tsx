@@ -73,26 +73,19 @@ export default function NotesButton(props): JSX.Element {
 
             if (parentHash != null) {
                 let parsedParentHash: Object = JSON.parse(parentHash)
-                console.log("1")
                 if (props.parentKey == 'sleepScreen' || 'moodAndEnergyScreen') {
                     let dataEntry: [] = parsedParentHash[todaysDate]
-                    console.log("2")
                     if (dataEntry != null) {
                         let note: string = dataEntry[dataEntry.length - 1]
-                        console.log("3")
                         if (note != null) {
-                            console.log("4")
                             setCurrentNote(note)
                         }
                     }
                 } else if (props.parentKey == 'medicationScreen') {
-                    console.log("5")
                     if (parsedParentHash[props.medicationID] != null) {
                         let parsedMedication: MedicationModel = JSON.parse(parsedParentHash[props.medicationID])
                         let note: string = parsedMedication['notes']
-                        console.log("6")
                         if (note != null) {
-                            console.log("7")
                             setCurrentNote(note)
                         }
                     } else {
