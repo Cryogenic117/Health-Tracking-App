@@ -1,10 +1,9 @@
-import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
-import Slider from '@react-native-community/slider'
-import { useState } from "react"
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Slider from '@react-native-community/slider'
 import moment from "moment"
+import React, { useState } from 'react'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
 import NotesButton from '../components/NotesButton'
 
 const radioButtonsData: RadioButtonProps[] = [{
@@ -48,16 +47,15 @@ const radioButtonsData: RadioButtonProps[] = [{
 }]
 
 let selectedButton
-let data = []
 export default function Sleep(): JSX.Element {
     const [sliderValue, tempValue] = useState(1)
 
     const onPress = async () => {
-        data[0] = selectedButton
-        data[1] = sliderValue
-        console.log("Sleep Screen: Attempting to save data " + data[0] + " " + data[1])
+        let data0 = selectedButton
+        let data1 = sliderValue
+        console.log("Sleep Screen: Attempting to save data " + data0 + " " + data1)
 
-        if (data[0] != null && data[1] != null) {
+        if (data0 != null && data1 != null) {
             try {
                 const key = "sleepScreen"
                 let hash = await AsyncStorage.getItem(key)
@@ -65,8 +63,8 @@ export default function Sleep(): JSX.Element {
 
                 if (hash == null) {
                     console.log("sleepScreen: Hash empty generating new hash")
-                    let newHash = { date: data }
-                    console.log("sleepScreen: Hash generated saving as " + date + " " + data)
+                    let newHash = { date: [data0, data1, ""] }
+                    console.log("sleepScreen: Hash generated saving as " + date + " " + [data0, data1, ""])
                     const entry = JSON.stringify(newHash)
 
                     try {
@@ -79,12 +77,16 @@ export default function Sleep(): JSX.Element {
                     }
                 } else {
                     let newHash = JSON.parse(hash)
-                    newHash[date] = data
+                    if (newHash[date] != null) {
+                        newHash[date] = [data0, data1, newHash[date][2]]
+                    } else {
+                        newHash[date] = [data0, data1, ""]
+                    }
                     const entry = JSON.stringify(newHash)
 
                     try {
                         await AsyncStorage.setItem(key, entry)
-                        console.log("sleepScreen: Hash edited saving as " + date + " " + data)
+                        console.log("sleepScreen: Hash edited saving as " + date + " " + newHash[date])
                         Alert.alert("Data Successfully saved")
                     } catch (e) {
                         Alert.alert("There was an error saving")
@@ -120,7 +122,7 @@ export default function Sleep(): JSX.Element {
                 radioButtons={radioButtons}
                 onPress={onPressRadioButton}
             />
-            <NotesButton />
+            <NotesButton parentKey='sleepScreen' />
             <View style={styles.sliderText}>
                 <Text style={styles.text}>{"How was your sleep quality?"}</Text>
             </View>
