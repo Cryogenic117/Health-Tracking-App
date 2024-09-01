@@ -12,28 +12,31 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/13696a00-1a3e-4fa8-8b00-5af20750a6d7"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cryogenic117.healthtrackingapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.cryogenic117.healthtrackingapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "packagerOpts": {
-      "sourceExts": [ "js", "json", "ts", "tsx", "jsx", "vue"],
-      "config": "babel.config.js"
-    }
+    "extra": {
+      "eas": {
+        "projectId": "13696a00-1a3e-4fa8-8b00-5af20750a6d7"
+      }
+    },
+    "owner": "cryogenic117"
   }
 }
-
-
