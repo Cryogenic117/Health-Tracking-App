@@ -8,7 +8,8 @@ This app was a class project for the course COP 43331 (Processes for Object-Orie
 2. Clone the Health Tracking App repository from GitHub.
 3. In a terminal, run the command "npm install" to install the project dependencies.
 4. In a terminal, run the command "npx expo start"
-5. Run the app on your favorite emulator or phone!
+5. Run the app on android emulator or ExpoGO mobile app.
+   
 
 ## Main Contributers (Our Team!)
 - [Brandon Knudson](https://www.linkedin.com/in/brandon-knudson-418b87223/)
