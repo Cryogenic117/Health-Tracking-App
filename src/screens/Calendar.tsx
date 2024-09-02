@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { StatusBar, SafeAreaView, StyleSheet, Text, ScrollView, Image } from 'react-native';
-import { Agenda, CalendarProvider } from 'react-native-calendars';
+import { StyleSheet, Text, ScrollView, View, SafeAreaView, StatusBar } from 'react-native';
+import { Calendar as RNCalendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import debounce from 'lodash/debounce';
+import { Ionicons } from '@expo/vector-icons';
+import { parseISO, startOfDay, endOfDay } from 'date-fns';
+import { useTheme } from '../context/ThemeContext';
+
+interface MedicationModel {
+  id: string;
+  name: string;
+  dateRange: string[];
+  dailyDoses: number;
+  notes: string;
+}
 
 export default function Calendar(): JSX.Element {
+    const { isDarkMode } = useTheme();
     const initialDate = useMemo(() => new Date().toISOString().substring(0, 10), []);
     const [currentDateSelected, setCurrentDateSelected] = useState(initialDate);
     const [medications, setMedications] = useState<MedicationModel[]>([]);
     const [sleepData, setSleepData] = useState<any>(null);
     const [moodAndEnergy, setMoodAndEnergy] = useState<any>(null);
-    const [formattedMedicationsState, setFormattedMedicationsState] = useState<string>('');
-    const [dataCache, setDataCache] = useState<Record<string, any>>({});
 
     const fetchData = useCallback(async (date: string) => {
         try {
@@ -26,24 +34,16 @@ export default function Calendar(): JSX.Element {
             setMedications(meds || []);
             setSleepData(sleep || null);
             setMoodAndEnergy(moodEnergy || null);
-
-            setDataCache(prev => ({
-                ...prev,
-                [date]: { medications: meds, sleepData: sleep, moodAndEnergy: moodEnergy }
-            }));
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }, []);
 
-    const debouncedFetchData = useMemo(() => debounce(fetchData, 300), [fetchData]);
-
     useFocusEffect(
         useCallback(() => {
             const refreshData = async () => {
                 const date = currentDateSelected;
-                setDataCache({}); // Clear the cache
-                await fetchData(date); // Fetch fresh data
+                await fetchData(date);
             };
             refreshData();
         }, [currentDateSelected, fetchData])
@@ -51,56 +51,73 @@ export default function Calendar(): JSX.Element {
 
     const formattedMedications = useMemo(() => {
         const currentDate = new Date(currentDateSelected);
-        currentDate.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
+
         return medications
             .filter(med => {
                 if (!med || !med.dateRange) return false;
                 const startDate = new Date(med.dateRange[0]);
                 const endDate = new Date(med.dateRange[1]);
-                startDate.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
-                endDate.setHours(0, 0, 0, 0); // Set time to midnight for accurate date comparison
                 
-                // Check if it's a single-day medication
-                const isSingleDay = startDate.getTime() === endDate.getTime();
-                
-                // For single-day medications, only check if the current date matches
-                if (isSingleDay) {
-                    return currentDate.getTime() === startDate.getTime();
-                }
-                return currentDate.getTime() >= startDate.getTime() && 
-                    currentDate.getTime() <= endDate.getTime();
+                return currentDate >= startOfDay(startDate) && currentDate <= endOfDay(endDate);
             })
             .map(med => `${med.name} (${med.dailyDoses} dose${med.dailyDoses > 1 ? 's' : ''})`)
             .join('\n');
     }, [medications, currentDateSelected]);
 
-    useEffect(() => {
-        setFormattedMedicationsState(formattedMedications);
-    }, [formattedMedications]);
+    const markedDates = useMemo(() => {
+        const marked = {};
+
+        medications.forEach(med => {
+            const startDate = new Date(med.dateRange[0]);
+            const endDate = new Date(med.dateRange[1]);
+            
+            for (let d = startOfDay(startDate); d <= endOfDay(endDate); d.setDate(d.getDate() + 1)) {
+                const dateString = d.toISOString().split('T')[0];
+                marked[dateString] = { marked: true, dotColor: '#5838B4' };
+            }
+        });
+        marked[currentDateSelected] = { ...marked[currentDateSelected], selected: true, selectedColor: '#5838B4' };
+        return marked;
+    }, [medications, currentDateSelected]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <CalendarProvider date={currentDateSelected}>             
-                <Agenda
-                    renderList={() => <DailyData
-                        date={currentDateSelected}
-                        medications={medications}
-                        sleepData={sleepData}
-                        moodAndEnergy={moodAndEnergy}
-                        formattedMedications={formattedMedications}
-                    />}
-                    onDayPress={(day) => setCurrentDateSelected(day.dateString)}
-                    hideExtraDays
-                    theme={{
-                        agendaKnobColor: '#5838B4',
-                        calendarBackground: 'black',
-                        selectedDayBackgroundColor: "#5838B4",
-                        monthTextColor: 'white',
-                        todayTextColor: '#5838B4',
-                        dayTextColor: 'white',
-                    }}
+        <SafeAreaView style={[styles.container, isDarkMode && { backgroundColor: '#000000' }]}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
+            <View style={[styles.header, isDarkMode && styles.headerDark]}>
+                <Text style={[styles.headerTitle, isDarkMode && styles.headerTitleDark]}>Calendar</Text>
+            </View>
+            <RNCalendar
+                current={currentDateSelected}
+                onDayPress={(day) => setCurrentDateSelected(day.dateString)}
+                markedDates={markedDates}
+                theme={{
+                    backgroundColor: isDarkMode ? '#000000' : '#ffffff',
+                    calendarBackground: isDarkMode ? '#000000' : '#ffffff',
+                    textSectionTitleColor: isDarkMode ? '#ffffff' : '#b6c1cd',
+                    selectedDayBackgroundColor: '#5838B4',
+                    selectedDayTextColor: '#ffffff',
+                    todayTextColor: '#5838B4',
+                    dayTextColor: isDarkMode ? '#FFFFFF' : '#2d4150',
+                    textDisabledColor: isDarkMode ? '#4d4d4d' : '#d9e1e8',
+                    dotColor: '#5838B4',
+                    selectedDotColor: '#ffffff',
+                    arrowColor: isDarkMode ? '#FFFFFF' : '#5838B4',
+                    monthTextColor: isDarkMode ? '#FFFFFF' : '#2d4150',
+                    textMonthFontWeight: 'bold',
+                    textDayFontSize: 16,
+                    textMonthFontSize: 16,
+                    textDayHeaderFontSize: 14
+                }}
+            />
+            <ScrollView style={[styles.dailyDataContainer, isDarkMode && styles.dailyDataContainerDark]}>
+                <DailyData
+                    date={currentDateSelected}
+                    sleepData={sleepData}
+                    moodAndEnergy={moodAndEnergy}
+                    formattedMedications={formattedMedications}
+                    isDarkMode={isDarkMode}
                 />
-            </CalendarProvider> 
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -112,7 +129,6 @@ async function getListOfUserMedications(): Promise<MedicationModel[]> {
             console.log("No medication data found");
             return [];
         }
-        console.log("Raw medication data:", medicationScreenHash);
         const parsedHash = JSON.parse(medicationScreenHash);
         if (typeof parsedHash !== 'object' || parsedHash === null) {
             console.error("Invalid medication data format");
@@ -123,7 +139,7 @@ async function getListOfUserMedications(): Promise<MedicationModel[]> {
                 if (typeof value === 'string') {
                     const parsed = JSON.parse(value);
                     if (parsed && typeof parsed === 'object' && 'name' in parsed) {
-                        return parsed as MedicationModel;
+                        return { ...parsed, id: key } as MedicationModel;
                     }
                 }
             } catch (parseError) {
@@ -175,7 +191,7 @@ async function getMoodAndEnergyDataForDate(date: string): Promise<any> {
     }
 }
 
-function DailyData({ date, medications, sleepData, moodAndEnergy, formattedMedications }): JSX.Element {
+function DailyData({ date, sleepData, moodAndEnergy, formattedMedications, isDarkMode }): JSX.Element {
     const monthNames = useMemo(() => [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -185,85 +201,135 @@ function DailyData({ date, medications, sleepData, moodAndEnergy, formattedMedic
     const dateText = `${monthNames[parseInt(date.substring(5, 7), 10) - 1]} ${dayText}, ${date.substring(0, 4)}`;
 
     return (
-        <SafeAreaView style={styles.dailyDataContainer}>
-            <Text style={styles.dateHeading}>{dateText}</Text>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <DataSection title="Sleep" data={sleepData} imageSource={require('../../assets/SleepNavigationIcon.png')} />
-                <DataSection title="Medications" data={formattedMedications} imageSource={require('../../assets/PillNavigationIcon.png')} />
-                <DataSection title="Mood/Energy" data={moodAndEnergy} imageSource={require('../../assets/MoodNavigationIcon.png')} />
-            </ScrollView>
-        </SafeAreaView>
-    );
-}
-
-function DataSection({ title, data, imageSource }): JSX.Element {
-    return (
-        <View style={styles.dataSection}>
-            <View style={styles.dataSectionHeader}>
-                <Image style={styles.imageFormat} source={imageSource} />
-                <Text style={styles.titleText}>{title}</Text>
-            </View>
-            <Text style={styles.otherText}>
-                {data ? formatData(data) : "No data available"}
-            </Text>
+        <View style={[styles.dailyDataContent, isDarkMode && styles.dailyDataContentDark]}>
+            <Text style={[styles.dateHeading, isDarkMode && styles.dateHeadingDark]}>{dateText}</Text>
+            <DataSection title="Sleep" data={sleepData} icon="moon" isDarkMode={isDarkMode} />
+            <DataSection
+                title="Medications"
+                data={formattedMedications ? formattedMedications.split('\n').map(med => (
+                    <Text key={med} style={isDarkMode ? styles.dataSectionContentDark : styles.dataSectionContent}>
+                        {med}
+                    </Text>
+                )) : null}
+                icon="medical"
+                isDarkMode={isDarkMode}
+            />
+            <DataSection title="Mood/Energy" data={moodAndEnergy} icon="happy" isDarkMode={isDarkMode} />
         </View>
     );
 }
 
-function formatData(data: any): string {
+function DataSection({ title, data, icon, isDarkMode }): JSX.Element {
+    return (
+        <View style={[styles.dataSection, isDarkMode && styles.dataSectionDark]}>
+            <View style={styles.dataSectionHeader}>
+                <Ionicons name={icon} size={24} color="#5838B4" />
+                <Text style={[styles.dataSectionTitle, isDarkMode && styles.dataSectionTitleDark]}>{title}</Text>
+            </View>
+            {Array.isArray(data) ? (
+                data
+            ) : (
+                <Text style={[styles.dataSectionContent, isDarkMode && styles.dataSectionContentDark]}>
+                    {data ? formatData(data) : "No data available"}
+                </Text>
+            )}
+        </View>
+    );
+}
+
+function formatData(data: any): string | JSX.Element[] {
     if (typeof data === 'string') {
         return data.replace(/\\n/g, '\n');
     }
     if (Array.isArray(data)) {
         return data.map(item => item.toString()).join('\n');
     }
+    if (typeof data === 'object' && data !== null) {
+        if ('name' in data && 'dailyDoses' in data) {
+            // Handle medication object
+            return `${data.name} (${data.dailyDoses} dose${data.dailyDoses > 1 ? 's' : ''})`;
+        }
+        // For other object types, create a formatted string
+        return Object.entries(data)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n');
+    }
     return JSON.stringify(data, null, 2);
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: StatusBar.currentHeight,
-        height: '100%',
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+    containerDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    header: {
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    headerDark: {
+        borderBottomColor: '#2C2C2E',
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#2d4150',
+    },
+    headerTitleDark: {
+        color: '#FFFFFF',
+    },
+    dailyDataContainer: {
+        flex: 1,
+    },
+    dailyDataContainerDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    dailyDataContent: {
+        padding: 16,
+    },
+    dailyDataContentDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    dateHeading: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        color: '#2d4150',
+    },
+    dateHeadingDark: {
+        color: '#FFFFFF',
     },
     dataSection: {
-        backgroundColor: '#5838B4',
-        padding: 10,
-        marginBottom: 10,
+        backgroundColor: '#f8f8f8',
         borderRadius: 8,
+        padding: 16,
+        marginBottom: 16,
+    },
+    dataSectionDark: {
+        backgroundColor: '#2C2C2E',
     },
     dataSectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 8,
     },
-    titleText: {
-        paddingLeft: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    imageFormat: {
-        width: 24,
-        height: 24,
-    },
-    otherText: {
-        fontWeight: 'bold',
-        color: 'white',
+    dataSectionTitle: {
         fontSize: 16,
-        paddingLeft: 34,
-    },
-    dateHeading: {
         fontWeight: 'bold',
-        padding: 10,
-        textAlign: 'center',
-        fontSize: 24,
-        color: 'black',
+        marginLeft: 8,
+        color: '#2d4150',
     },
-    dailyDataContainer: {
-        flex: 1,
-        paddingHorizontal: 10,
+    dataSectionTitleDark: {
+        color: '#FFFFFF',
     },
-    scrollViewContent: {
-        flexGrow: 1,
+    dataSectionContent: {
+        fontSize: 14,
+        color: '#4a4a4a',
+    },
+    dataSectionContentDark: {
+        color: '#FFFFFF',
     },
 });

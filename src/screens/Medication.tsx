@@ -1,11 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
     ActivityIndicator,
     Keyboard,
     Platform,
     SafeAreaView,
-    ScrollView,
     StatusBar,
     StyleSheet,
     Text,
@@ -20,9 +19,11 @@ import NotesButton from '../components/NotesButton'
 import { useMedication } from '../context/MedicationContext'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Ionicons } from '@expo/vector-icons';
-import { MedicationContextType, MedicationModel } from '../context/MedicationContext'; // Add this import
+import { MedicationModel } from '../context/MedicationContext'; // Add this import
+import { useTheme } from '../context/ThemeContext'; // Add this import
 
 export default function Medication(): JSX.Element {
+    const { isDarkMode } = useTheme(); // Add this line
     const [results, setResults] = useState<React.ReactNode[] | null>(null)
     const [textEditable, setTextEditable] = useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
@@ -156,15 +157,15 @@ export default function Medication(): JSX.Element {
 
     const renderItem = ({ item: med }) => (
         <TouchableOpacity onPress={() => editMedication(med)}>
-            <View style={styles.medicationCard}>
+            <View style={[styles.medicationCard, isDarkMode && styles.medicationCardDark]}>
                 <View style={styles.medicationInfo}>
-                    <Text style={styles.medicationName}>{med.name}</Text>
-                    <Text style={styles.medicationDoses}>{med.dailyDoses} dose{med.dailyDoses > 1 ? 's' : ''} per day</Text>
+                    <Text style={[styles.medicationName, isDarkMode && styles.medicationNameDark]}>{med.name}</Text>
+                    <Text style={[styles.medicationDoses, isDarkMode && styles.medicationDosesDark]}>{med.dailyDoses} dose{med.dailyDoses > 1 ? 's' : ''} per day</Text>
                 </View>
                 <View style={styles.medicationActions}>
-                    <NotesButton parentKey='medicationScreen' medicationID={med.id} />
+                    <NotesButton parentKey='medicationScreen' medicationID={med.id} isDarkMode={isDarkMode} />
                     <TouchableOpacity onPress={() => deleteMedication(med.id)}>
-                        <Icon name="delete" size={24} color="#800020" />
+                        <Icon name="delete" size={24} color="red" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -172,10 +173,11 @@ export default function Medication(): JSX.Element {
     );
 
     return (
-        <SafeAreaView style={styles.androidSafeArea}>
-            <View style={styles.searchContainer}>
-                <View style={styles.searchInputContainer}>
-                    <Ionicons name="search" size={24} color="#5838B4" style={styles.searchIcon} />
+        <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
+            <View style={[styles.searchContainer, isDarkMode && styles.searchContainerDark]}>
+                <View style={[styles.searchInputContainer, isDarkMode && styles.searchInputContainerDark]}>
+                    <Ionicons name="search" size={24} color={isDarkMode ? "#FFFFFF" : "#5838B4"} style={styles.searchIcon} />
                     <TextInput
                         onChangeText={setText}
                         onFocus={() => setSearchActive(true)}
@@ -184,32 +186,32 @@ export default function Medication(): JSX.Element {
                         onSubmitEditing={search}
                         editable={textEditable}
                         placeholder="Search medications"
-                        placeholderTextColor="#999"
-                        style={styles.searchInput}
+                        placeholderTextColor={isDarkMode ? "#999" : "#999"}
+                        style={[styles.searchInput, isDarkMode && styles.searchInputDark]}
                         returnKeyType="search"
                     />
                     {text.length > 0 && (
                         <TouchableOpacity onPress={() => setText('')} style={styles.clearButton}>
-                            <Ionicons name="close-circle" size={20} color="#999" />
+                            <Ionicons name="close-circle" size={20} color={isDarkMode ? "#FFFFFF" : "#999"} />
                         </TouchableOpacity>
                     )}
                 </View>
                 {isSearchActive && (
-                    <TouchableOpacity style={styles.cancelButton} onPress={cancelButtonPressed}>
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                    <TouchableOpacity style={[styles.cancelButton, isDarkMode && styles.cancelButtonDark]} onPress={cancelButtonPressed}>
+                        <Text style={[styles.cancelButtonText, isDarkMode && styles.cancelButtonTextDark]}>Cancel</Text>
                     </TouchableOpacity>
                 )}
             </View>
             <View style={styles.contentContainer}>
                 {!isSearchActive ? (
                     <View style={styles.medicationListContainer}>
-                        <Text style={styles.title}>{"Your Medications"}</Text>
+                        <Text style={[styles.title, isDarkMode && styles.titleDark]}>{"Your Medications"}</Text>
                         <FlatList
                             data={medications}
                             renderItem={renderItem}
                             keyExtractor={(item) => item.id}
                             contentContainerStyle={styles.medicationList}
-                            ListEmptyComponent={<Text style={styles.noMedications}>No Current Medications.</Text>}
+                            ListEmptyComponent={<Text style={[styles.noMedications, isDarkMode && styles.noMedicationsDark]}>No Current Medications.</Text>}
                         />
                     </View>
                 ) : (
@@ -223,27 +225,33 @@ export default function Medication(): JSX.Element {
             </View>
             <NewMedicationModal
                 medicationName={selectedMedication.name}
-                medicationId={selectedMedication.id}
-                cancelToggle={medicationModalCancelToggle}
-                saveToggle={medicationModalSaveToggle}
-                isOpen={showModal}
                 editingMedication={medications.find(med => med.id === selectedMedication.id)}
+                onClose={medicationModalCancelToggle}
+                onSave={medicationModalSaveToggle}
+                visible={showModal}
+                isDarkMode={isDarkMode}
             />
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    androidSafeArea: {
+    container: {
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "#FFFFFF",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    },
+    containerDark: {
+        backgroundColor: "#1C1C1E",
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 15,
         paddingVertical: 10,
+    },
+    searchContainerDark: {
+        backgroundColor: '#2C2C2E',
     },
     searchInputContainer: {
         flex: 1,
@@ -252,6 +260,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         borderRadius: 20,
         paddingHorizontal: 10,
+    },
+    searchInputContainerDark: {
+        backgroundColor: '#2C2C2E',
     },
     searchIcon: {
         marginRight: 10,
@@ -262,15 +273,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
+    searchInputDark: {
+        color: '#FFFFFF',
+    },
     clearButton: {
         padding: 5,
     },
     cancelButton: {
         marginLeft: 10,
     },
+    cancelButtonDark: {
+        backgroundColor: '#2C2C2E',
+    },
     cancelButtonText: {
         color: '#5838B4',
         fontSize: 16,
+    },
+    cancelButtonTextDark: {
+        color: '#FFFFFF',
     },
     contentContainer: {
         flex: 1,
@@ -284,6 +304,9 @@ const styles = StyleSheet.create({
         color: '#333',
         marginVertical: 15,
         marginHorizontal: 15,
+    },
+    titleDark: {
+        color: '#FFFFFF',
     },
     medicationCard: {
         flexDirection: 'row',
@@ -303,6 +326,10 @@ const styles = StyleSheet.create({
         shadowRadius: 2.62,
         elevation: 4,
     },
+    medicationCardDark: {
+        backgroundColor: '#2C2C2E',
+        shadowColor: "#FFFFFF",
+    },
     medicationInfo: {
         flex: 1,
     },
@@ -311,10 +338,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    medicationNameDark: {
+        color: '#FFFFFF',
+    },
     medicationDoses: {
         fontSize: 14,
         color: '#666',
         marginTop: 5,
+    },
+    medicationDosesDark: {
+        color: '#CCCCCC',
     },
     medicationActions: {
         flexDirection: 'row',
@@ -325,6 +358,9 @@ const styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
         marginTop: 30,
+    },
+    noMedicationsDark: {
+        color: '#CCCCCC',
     },
     error: {
         textAlign: "center",

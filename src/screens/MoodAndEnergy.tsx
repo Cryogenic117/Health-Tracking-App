@@ -1,167 +1,203 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import Slider from '@react-native-community/slider'
-import moment from "moment"
 import React, { useState } from 'react'
-import { Alert, Image, ImageStyle, StyleProp, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, StatusBar } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Slider from '@react-native-community/slider'
+import { Ionicons } from '@expo/vector-icons'
 import NotesButton from '../components/NotesButton'
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import moment from "moment"
+import { useTheme } from '../context/ThemeContext'
+
+type IconName = React.ComponentProps<typeof Ionicons>['name']
+
+const emojis: { icon: IconName; label: string; color: string }[] = [
+    { icon: 'happy', label: 'Great', color: '#1dbb9e' },
+    { icon: 'happy-outline', label: 'Happy', color: '#436a14' },
+    { icon: 'sad', label: 'Fine', color: '#236bfb' },
+    { icon: 'sad-outline', label: 'Sad', color: '#e18822' },
+    { icon: 'sad', label: 'Awful', color: '#fd216a' },
+    { icon: 'thunderstorm', label: 'Angry', color: '#fc1d42' }
+]
 
 export default function MoodAndEnergy(): JSX.Element {
-    const [energyIntensity, setEnergyIntensity] = useState(0)
+    const { isDarkMode } = useTheme();
+    const [energyIntensity, setEnergyIntensity] = useState(5)
     const [selectedEmojiIndex, setSelectedEmojiIndex] = useState(-1)
 
-    const onPress = async () => {
-        let data0 = emojis[selectedEmojiIndex].label == undefined ? null : emojis[selectedEmojiIndex].label
-        let data1 = energyIntensity == undefined ? null : energyIntensity
-        console.log("Mood and Energy Screen attempting to save data " + data0 + " " + data1)
-
-        if (data0 != null && data1 != null) {
-            try {
-                const key = "moodAndEnergyScreen"
-                const date = moment().format("DD/MM/YYYY")
-                let hash = await AsyncStorage.getItem(key)
-
-                if (hash == null) {
-                    console.log("moodAndEnergyScreen: Hash empty generating new hash")
-                    let newHash = { date: [data0, data1, ""] }
-                    console.log("moodAndEnergyScreen: Hash generated saving as " + date + " " + [data0, data1, ""])
-                    const entry = JSON.stringify(newHash)
-
-                    try {
-                        await AsyncStorage.setItem(key, entry)
-                        console.log("moodAndEnergyScreen: Save Successful")
-                        Alert.alert("Data successfully saved")
-                    } catch (e) {
-                        Alert.alert("There was an error saving")
-                        console.log("moodAndEnergyScreen: Save failed - error: " + e)
-                    }
-                } else {
-                    let newHash = JSON.parse(hash)
-                    if (newHash[date] != null) {
-                        newHash[date] = [data0, data1, newHash[date][2]]
-                    } else {
-                        newHash[date] = [data0, data1, ""]
-                    }
-                    const entry = JSON.stringify(newHash)
-
-                    try {
-                        await AsyncStorage.setItem(key, entry)
-                        console.log("moodAndEnergyScreen: Hash edited saving as " + date + " " + newHash[date])
-                        Alert.alert("Data Successfully saved")
-                    } catch (e) {
-                        Alert.alert("There was an error saving")
-                        console.log("moodAndEnergyScreen: Save failed - error " + e)
-                    }
-                }
-            } catch (e) {
-                Alert.alert("There was an error saving")
-                console.log("moodAndEnergyScreen: Save failed - error " + e)
-            }
-        } else {
-            Alert.alert("Error: Data not entered please try again")
+    const onSave = async () => {
+        if (selectedEmojiIndex === -1) {
+            Alert.alert("Error", "Please select a mood before saving.")
+            return
         }
 
+        const data0 = emojis[selectedEmojiIndex].label
+        const data1 = energyIntensity
+
+        try {
+            const key = "moodAndEnergyScreen"
+            const date = moment().format("DD/MM/YYYY")
+            let hash = await AsyncStorage.getItem(key)
+
+            const newData = [data0, data1, ""]
+            const newHash = hash ? JSON.parse(hash) : {}
+            newHash[date] = newData
+
+            await AsyncStorage.setItem(key, JSON.stringify(newHash))
+            Alert.alert("Success", "Data successfully saved")
+        } catch (e) {
+            console.error("Error saving mood and energy data:", e)
+            Alert.alert("Error", "There was an error saving your data")
+        }
     }
-    const emojis = [
-        { source: require('../../assets/moodEmojis/great.png'), label: 'Great', color: '#1dbb9e' },
-        { source: require('../../assets/moodEmojis/happy.png'), label: 'Happy', color: '#436a14' },
-        { source: require('../../assets/moodEmojis/fine.png'), label: 'Fine', color: '#236bfb' },
-        { source: require('../../assets/moodEmojis/sad.png'), label: 'Sad', color: '#e18822' },
-        { source: require('../../assets/moodEmojis/awful.png'), label: 'Awful', color: '#fd216a' },
-        { source: require('../../assets/moodEmojis/angry.png'), label: 'Angry', color: '#fc1d42' }
-    ]
 
     return (
-        <View style={styles.container}>
-            <Text style={{ fontSize: 25, fontWeight: 'bold', marginBottom: 10 }}>{"How are you feeling today?"}</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginHorizontal: 10 }}>
-                {emojis.map((emoji, index) => (
-                    <TouchableOpacity key={index} onPress={() => setSelectedEmojiIndex(index)}>
-                        <View style={getFaceStyle(index, selectedEmojiIndex)}>
-                            <Image style={styles.image} source={emoji.source} />
-                            <Text style={{ color: emoji.color, fontWeight: 'bold', fontSize: 15, textAlign: "center" }}>{emoji.label}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-            </View>
-            <Text style={styles.sliderQuestion}>{"How much energy do you have?"}</Text>
-            <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={10}
-                onValueChange={(value) => setEnergyIntensity(value)}
-                step={1}
-                value={energyIntensity}
-                maximumTrackTintColor={'#1f1f1e'}
-                minimumTrackTintColor={"#5838B4"}
-                thumbTintColor={"#BEB1A4"}
-            />
-            <NotesButton parentKey='moodAndEnergyScreen' />
-            <TouchableOpacity style={styles.button} onPress={onPress}>
-                <Text style={{ color: '#ffffff', fontSize: 20 }}>{"Save Data"}</Text>
-            </TouchableOpacity>
-        </View>
+        <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text style={[styles.title, isDarkMode && styles.titleDark]}>How are you feeling today?</Text>
+                <View style={styles.emojiContainer}>
+                    {emojis.map((emoji, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={[
+                                styles.emojiButton,
+                                selectedEmojiIndex === index && styles.selectedEmojiButton,
+                                isDarkMode && styles.emojiButtonDark
+                            ]}
+                            onPress={() => setSelectedEmojiIndex(index)}
+                        >
+                            <Ionicons name={emoji.icon} size={40} color={emoji.color} />
+                            <Text style={[styles.emojiLabel, { color: emoji.color }]}>{emoji.label}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <Text style={[styles.subtitle, isDarkMode && styles.subtitleDark]}>How much energy do you have?</Text>
+                <View style={styles.sliderContainer}>
+                    <Text style={[styles.sliderValue, isDarkMode && styles.sliderValueDark]}>{energyIntensity}</Text>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={10}
+                        step={1}
+                        value={energyIntensity}
+                        onValueChange={setEnergyIntensity}
+                        minimumTrackTintColor="#5838B4"
+                        maximumTrackTintColor={isDarkMode ? "#4D4D4D" : "#D1D1D6"}
+                        thumbTintColor="#5838B4"
+                    />
+                    <View style={styles.sliderLabels}>
+                        <Text style={[styles.sliderLabel, isDarkMode && styles.sliderLabelDark]}>Low</Text> 
+                        <Text style={[styles.sliderLabel, isDarkMode && styles.sliderLabelDark]}>High</Text>
+                    </View>
+                </View>
+                <NotesButton parentKey='moodAndEnergyScreen' isDarkMode={isDarkMode} />
+                <TouchableOpacity style={[styles.saveButton, isDarkMode && styles.saveButtonDark]} onPress={onSave}>
+                    <Text style={[styles.saveButtonText, isDarkMode && styles.saveButtonTextDark]}>Save</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </SafeAreaView>
     )
-}
-
-function getFaceStyle(emojiIndex: number, selectedEmojiIndex: number): StyleProp<ImageStyle> {
-    if (emojiIndex == selectedEmojiIndex) {
-        return styles.selectedEmoji
-    }
-    return styles.unselectedEmoji
 }
 
 const styles = StyleSheet.create({
     container: {
-        height: '100%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
+        flex: 1,
+        backgroundColor: '#FFFFFF',
     },
-    unselectedEmoji: {
-        marginHorizontal: 10,
-        marginVertical: 10,
-        borderWidth: 3,
-        borderColor: '#f2f2f2',
-        borderRadius: 10,
-        padding: 2
+    containerDark: {
+        backgroundColor: '#1C1C1E',
     },
-    selectedEmoji: {
-        marginHorizontal: 10,
-        marginVertical: 10,
-        borderWidth: 3,
-        borderColor: '#5838B4',
-        borderRadius: 10,
-        ShadowRadius: 100,
-        shadowOpacity: .8,
-        shadowOffset: {
-            height: 10,
-            width: 10
-        },
-        shadowColor: "#5838B4",
-        padding: 2
+    scrollContent: {
+        flexGrow: 1,
+        padding: 20,
     },
-    sliderQuestion: {
-        color: 'black',
+    title: {
+        fontSize: 24,
         fontWeight: 'bold',
-        fontSize: 25,
-        marginTop: 35,
-        marginBottom: 10
+        color: '#1C1C1E',
+        marginBottom: 20,
     },
-    button: {
+    titleDark: {
+        color: '#FFFFFF',
+    },
+    emojiContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 30,
+    },
+    emojiButton: {
         alignItems: 'center',
-        backgroundColor: '#262626',
+        backgroundColor: '#F2F2F7',
+        borderRadius: 12,
         padding: 10,
-        width: 125,
-        margin: 20,
-        borderRadius: 10
+        width: '30%',
+        marginBottom: 10,
+    },
+    emojiButtonDark: {
+        backgroundColor: '#2C2C2E',
+    },
+    selectedEmojiButton: {
+        backgroundColor: '#E8E8ED',
+    },
+    emojiLabel: {
+        marginTop: 5,
+        fontSize: 12,
+    },
+    subtitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#1C1C1E',
+        marginBottom: 15,
+    },
+    subtitleDark: {
+        color: '#FFFFFF',
+    },
+    sliderContainer: {
+        marginBottom: 30,
+    },
+    sliderValue: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#5838B4',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    sliderValueDark: {
+        color: '#FFFFFF',
     },
     slider: {
-        height: 25,
-        width: 325
+        width: '100%',
+        height: 40,
     },
-    image: {
-        width: 75,
-        height: 75,
-        margin: 10
-    }
+    sliderLabels: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 5,
+    },
+    sliderLabel: {
+        fontSize: 14,
+        color: '#8E8E93',
+    },
+    sliderLabelDark: {
+        color: '#FFFFFF',
+    },
+    saveButton: {
+        backgroundColor: '#5838B4',
+        paddingVertical: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    saveButtonDark: {
+        backgroundColor: '#FFFFFF',
+    },
+    saveButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    saveButtonTextDark: {
+        color: '#1C1C1E',
+    },
 })

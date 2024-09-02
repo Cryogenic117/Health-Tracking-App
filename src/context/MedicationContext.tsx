@@ -9,6 +9,8 @@ export type MedicationContextType = {
 export interface MedicationModel {
   id: string;
   name: string;
+  dateRange: ['', ''];
+  notes: string;
   dailyDoses: number;
 }
 

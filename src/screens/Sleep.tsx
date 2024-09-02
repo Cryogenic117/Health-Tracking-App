@@ -1,206 +1,213 @@
+import React, { useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Alert, SafeAreaView, ScrollView, StatusBar } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Slider from '@react-native-community/slider'
 import moment from "moment"
-import React, { useState } from 'react'
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group'
+import { Ionicons } from '@expo/vector-icons'
 import NotesButton from '../components/NotesButton'
+import { useTheme } from '../context/ThemeContext'
 
-const radioButtonsData: RadioButtonProps[] = [{
-    id: 'btn1',
-    label: "Very Little (3 hours or less)",
-    value: "Very Little (3 hours or less)",
-    size: 30,
-    labelStyle: { color: '#800020', fontSize: 20, fontWeight: 'bold' }
-},
-{
-    id: 'btn2',
-    label: "Some (4 to 5 hours)",
-    value: "Some (4 to 5 hours)",
-    size: 30,
-    containerStyle: { marginTop: 20 },
-    labelStyle: { color: '#EDB100', fontSize: 20, fontWeight: 'bold' }
-},
-{
-    id: 'btn3',
-    label: "A Good Amount (6 to 7 hours)",
-    value: "A Good Amount (6 to 7 hours)",
-    size: 30,
-    containerStyle: { marginTop: 20 },
-    labelStyle: { color: '#2a8000', fontSize: 20, fontWeight: 'bold' }
-},
-{
-    id: 'btn4',
-    label: "A lot (8 to 9 hours)",
-    value: "A lot (8 to 9 hours)",
-    size: 30,
-    containerStyle: { marginTop: 20 },
-    labelStyle: { color: '#1B5E20', fontSize: 20, fontWeight: 'bold' }
-},
-{
-    id: 'btn5',
-    label: "Excessive (Over 9 hours)",
-    value: "Excessive (Over 9 hours)",
-    size: 30,
-    containerStyle: { marginTop: 20 },
-    labelStyle: { color: '#EDB100', fontSize: 20, fontWeight: 'bold' }
-}]
+const sleepOptions = [
+    { label: "Very Little (3 hours or less)", value: "Very Little (3 hours or less)", icon: "moon-outline" },
+    { label: "Some (4 to 5 hours)", value: "Some (4 to 5 hours)", icon: "moon" },
+    { label: "A Good Amount (6 to 7 hours)", value: "A Good Amount (6 to 7 hours)", icon: "moon" },
+    { label: "A lot (8 to 9 hours)", value: "A lot (8 to 9 hours)", icon: "moon" },
+    { label: "Excessive (Over 9 hours)", value: "Excessive (Over 9 hours)", icon: "moon" }
+]
 
-let selectedButton
 export default function Sleep(): JSX.Element {
-    const [sliderValue, tempValue] = useState(1)
+    const { isDarkMode } = useTheme();
+    const [selectedSleep, setSelectedSleep] = useState<string | null>(null)
+    const [sleepQuality, setSleepQuality] = useState(5)
 
     const onPress = async () => {
-        let data0 = selectedButton
-        let data1 = sliderValue
-        console.log("Sleep Screen: Attempting to save data " + data0 + " " + data1)
+        if (!selectedSleep) {
+            Alert.alert("Error", "Please select your sleep duration")
+            return
+        }
 
-        if (data0 != null && data1 != null) {
-            try {
-                const key = "sleepScreen"
-                let hash = await AsyncStorage.getItem(key)
-                const date = moment().format("DD/MM/YYYY")
+        try {
+            const key = "sleepScreen"
+            const date = moment().format("DD/MM/YYYY")
+            let hash = await AsyncStorage.getItem(key)
 
-                if (hash == null) {
-                    console.log("sleepScreen: Hash empty generating new hash")
-                    let newHash = { date: [data0, data1, ""] }
-                    console.log("sleepScreen: Hash generated saving as " + date + " " + [data0, data1, ""])
-                    const entry = JSON.stringify(newHash)
+            const newData = [selectedSleep, sleepQuality, ""]
+            const newHash = hash ? JSON.parse(hash) : {}
+            newHash[date] = newData
 
-                    try {
-                        await AsyncStorage.setItem(key, entry)
-                        console.log("sleepScreen: Save Successful")
-                        Alert.alert("Data successfully saved")
-                    } catch (e) {
-                        Alert.alert("There was an error saving")
-                        console.log("sleepScreen: Save failed - error: " + e)
-                    }
-                } else {
-                    let newHash = JSON.parse(hash)
-                    if (newHash[date] != null) {
-                        newHash[date] = [data0, data1, newHash[date][2]]
-                    } else {
-                        newHash[date] = [data0, data1, ""]
-                    }
-                    const entry = JSON.stringify(newHash)
-
-                    try {
-                        await AsyncStorage.setItem(key, entry)
-                        console.log("sleepScreen: Hash edited saving as " + date + " " + newHash[date])
-                        Alert.alert("Data Successfully saved")
-                    } catch (e) {
-                        Alert.alert("There was an error saving")
-                        console.log("sleepScreen: Save failed - error " + e)
-                    }
-                }
-            } catch (e) {
-                Alert.alert("There was an error saving")
-                console.log("moodAndEnergyScreen: Save failed - error " + e)
-            }
-        } else {
-            Alert.alert("Error: Data not entered please try again")
+            await AsyncStorage.setItem(key, JSON.stringify(newHash))
+            Alert.alert("Success", "Sleep data successfully saved")
+        } catch (e) {
+            console.error("Error saving sleep data:", e)
+            Alert.alert("Error", "There was an error saving your sleep data")
         }
     }
 
-    const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>(radioButtonsData)
-
-    const onPressRadioButton = (radioButtonsArray: RadioButtonProps[]) => {
-        setRadioButtons(radioButtonsArray)
-        radioButtonsArray.forEach((button) => {
-            if (button.selected == true) {
-                selectedButton = button.id
-                return selectedButton
-            }
-        })
-    }
-
     return (
-        <View style={styles.sleepScreenView}>
-            <Text style={styles.question}>{"How much did you sleep today?"}</Text>
-            <RadioGroup
-                containerStyle={styles.buttons}
-                radioButtons={radioButtons}
-                onPress={onPressRadioButton}
-            />
-            <NotesButton parentKey='sleepScreen' />
-            <View style={styles.sliderText}>
-                <Text style={styles.text}>{"How was your sleep quality?"}</Text>
-            </View>
-            <View style={styles.sliderView}>
-                <Slider
-                    style={styles.slider}
-                    minimumValue={1}
-                    maximumValue={10}
-                    onValueChange={(value) => tempValue(value)}
-                    step={1}
-                    value={sliderValue}
-                    maximumTrackTintColor={"#1f1f1e"}
-                    minimumTrackTintColor={"#828180"}
-                    thumbTintColor={"#BEB1A4"}
-                />
-            </View>
-            <TouchableOpacity
-                style={styles.Button}
-                onPress={onPress}>
-                <Text style={styles.buttonText}>{"Save Data"}</Text>
-            </TouchableOpacity>
-        </View>
+        <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text style={[styles.title, isDarkMode && styles.titleDark]}>How much did you sleep today?</Text>
+                <View style={styles.sleepOptionsContainer}>
+                    {sleepOptions.map((option, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={[
+                                styles.sleepOption,
+                                isDarkMode && styles.sleepOptionDark,
+                                selectedSleep === option.value && styles.selectedSleepOption
+                            ]}
+                            onPress={() => setSelectedSleep(option.value)}
+                        >
+                            <Ionicons 
+                                name={option.icon as any} 
+                                size={24} 
+                                color={selectedSleep === option.value ? "#FFFFFF" : (isDarkMode ? "#FFFFFF" : "#5838B4")} 
+                            />
+                            <Text style={[
+                                styles.sleepOptionText,
+                                isDarkMode && styles.sleepOptionTextDark,
+                                selectedSleep === option.value && styles.selectedSleepOptionText
+                            ]}>
+                                {option.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                <Text style={[styles.subtitle, isDarkMode && styles.subtitleDark]}>How was your sleep quality?</Text>
+                <View style={styles.sliderContainer}>
+                    <Text style={[styles.sliderValue, isDarkMode && styles.sliderValueDark]}>{sleepQuality}</Text>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={1}
+                        maximumValue={10}
+                        step={1}
+                        value={sleepQuality}
+                        onValueChange={setSleepQuality}
+                        minimumTrackTintColor="#5838B4"
+                        maximumTrackTintColor={isDarkMode ? "#4D4D4D" : "#D1D1D6"}
+                        thumbTintColor="#5838B4"
+                    />
+                    <View style={styles.sliderLabels}>
+                        <Text style={[styles.sliderLabel, isDarkMode && styles.sliderLabelDark]}>Poor</Text>
+                        <Text style={[styles.sliderLabel, isDarkMode && styles.sliderLabelDark]}>Excellent</Text>
+                    </View>
+                </View>
+
+                <NotesButton parentKey='sleepScreen' isDarkMode={isDarkMode} />
+
+                <TouchableOpacity style={[styles.saveButton, isDarkMode && styles.saveButtonDark]} onPress={onPress}>
+                    <Text style={[styles.saveButtonText, isDarkMode && styles.saveButtonTextDark]}>Save Data</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    //todo:AKEEN make a global stylesheet with sizing,text color,font,etc. - confer w/ team
-    text: {
-        color: 'black',
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+    containerDark: {
+        backgroundColor: '#1C1C1E',
+    },
+    scrollContent: {
+        flexGrow: 1,
+        padding: 20,
+    },
+    title: {
+        fontSize: 24,
         fontWeight: 'bold',
-        fontSize: 20
+        color: '#1C1C1E',
+        marginBottom: 20,
     },
-    buttonText: {
-        color: '#ffffff'
+    titleDark: {
+        color: '#FFFFFF',
     },
-    Button: {
-        alignItems: "center",
-        backgroundColor: "#262626",
-        padding: 10,
-        width: 125,
-        margin: 20,
-        borderRadius: 10
+    sleepOptionsContainer: {
+        marginBottom: 30,
     },
-    blackBar: {
-        backgroundColor: 'black',
-        height: 2,
-        width: 225,
-        margin: 50
+    sleepOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F2F2F7',
+        borderRadius: 12,
+        padding: 15,
+        marginBottom: 10,
     },
-    sleepScreenView: {
-        height: '100%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center'
+    sleepOptionDark: {
+        backgroundColor: '#2C2C2E',
     },
-    sliderView: {
-        justifyContent: 'center',
-        alignItems: 'center'
+    selectedSleepOption: {
+        backgroundColor: '#5838B4',
     },
-    sliderText: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: 260,
-        paddingTop: 22
+    sleepOptionText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: '#1C1C1E',
+    },
+    sleepOptionTextDark: {
+        color: '#FFFFFF',
+    },
+    selectedSleepOptionText: {
+        color: '#FFFFFF',
+    },
+    subtitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#1C1C1E',
+        marginBottom: 15,
+    },
+    subtitleDark: {
+        color: '#FFFFFF',
+    },
+    sliderContainer: {
+        marginBottom: 30,
+    },
+    sliderValue: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#5838B4',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    sliderValueDark: {
+        color: '#FFFFFF',
     },
     slider: {
-        height: 25,
-        width: 325,
+        width: '100%',
+        height: 40,
     },
-    question: {
-        fontSize: 25,
-        padding: 20,
-        fontWeight: 'bold'
+    sliderLabels: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 5,
     },
-    buttons: {
-        alignItems: 'flex-start',
-        padding: 20,
-        border: "10px",
-        paddingTop: 10
-    }
+    sliderLabel: {
+        fontSize: 14,
+        color: '#8E8E93',
+    },
+    sliderLabelDark: {
+        color: '#FFFFFF',
+    },
+    saveButton: {
+        backgroundColor: '#5838B4',
+        borderRadius: 12,
+        padding: 15,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    saveButtonDark: {
+        backgroundColor: '#FFFFFF',
+    },
+    saveButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    saveButtonTextDark: {
+        color: '#1C1C1E',
+    },
 })
