@@ -1,13 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from "moment"
-import React, { useState } from 'react'
-import { Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from 'react-native'
 import Modal from 'react-native-modal'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default function NotesButton(props): JSX.Element {
     const [isModalVisible, setModalVisibility] = useState(false)
     const [currentNote, setCurrentNote] = useState('')
-    const [noteInputText, setNoteInputText] = useState(currentNote)
+    const [noteInputText, setNoteInputText] = useState('')
+
+    useEffect(() => {
+        if (isModalVisible) {
+            getNotesData()
+        }
+    }, [isModalVisible])
 
     const onSave = () => {
         storeNotesData(noteInputText)
@@ -101,85 +108,106 @@ export default function NotesButton(props): JSX.Element {
     }
 
     const onNotesButtonPress = () => {
-        getNotesData()
         setModalVisibility(true)
     }
 
     return (
-        <TouchableOpacity onPress={() => onNotesButtonPress()}>
-            <Text style={styles.buttonText}>{'+ Notes'}</Text>
-            <Modal isVisible={isModalVisible}>
-                <View style={styles.modalContainer} >
-                    <Text style={styles.title}>{'Notes'}</Text>
-                    <View style={{ borderWidth: 1, flex: 1 }}>
-                        <ScrollView>
-                            <TextInput
-                                style={styles.noteInput}
-                                multiline={true}
-                                selectionColor={'#5838B4'}
-                                onChangeText={(text) => { setNoteInputText(text) }}
-                                value={noteInputText}
-                            />
-                        </ScrollView>
+        <View>
+            <TouchableOpacity onPress={onNotesButtonPress} style={styles.notesButton}>
+                <Icon name="note-add" size={24} color="#5838B4" />
+                <Text style={styles.buttonText}>Notes</Text>
+            </TouchableOpacity>
+            <Modal
+                isVisible={isModalVisible}
+                onBackdropPress={() => setModalVisibility(false)}
+                onSwipeComplete={() => setModalVisibility(false)}
+                swipeDirection={['down']}
+                style={styles.modal}
+            >
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={styles.modalContent}
+                >
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>Notes</Text>
+                        <TouchableOpacity onPress={() => setModalVisibility(false)}>
+                            <Icon name="close" size={24} color="#333" />
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.buttons}>
-                        <View style={styles.eachButton}>
-                            <Button
-                                color={'#5838B4'}
-                                title='Cancel'
-                                onPress={() => setModalVisibility(false)}
-                            />
-                        </View>
-                        <View style={styles.eachButton}>
-                            <Button
-                                color={'#5838B4'}
-                                title='Save'
-                                onPress={() => onSave()}
-                            />
-                        </View>
-                    </View>
-                </View>
+                    <TextInput
+                        style={styles.noteInput}
+                        multiline={true}
+                        placeholder="Enter your notes here..."
+                        value={noteInputText}
+                        onChangeText={setNoteInputText}
+                    />
+                    <TouchableOpacity style={styles.saveButton} onPress={onSave}>
+                        <Text style={styles.saveButtonText}>Save</Text>
+                    </TouchableOpacity>
+                    <View style={styles.bottomSpacer} />
+                </KeyboardAvoidingView>
             </Modal>
-        </TouchableOpacity>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    buttonText: {
-        color: '#328FE5',
-        fontSize: 15,
-        fontStyle: 'italic'
-    },
-    modalContainer: {
-        flex: 1,
-        backgroundColor: 'black',
-        padding: 15,
-        borderRadius: 10,
-        justifyContent: 'space-between'
-    },
-    noteInput: {
-        backgroundColor: 'white',
-        height: 550,
-        fontSize: 16,
-        textAlignVertical: 'top'
-    },
-    title: {
-        fontSize: 23,
-        textAlign: 'center',
-        color: 'white'
-    },
-    eachButton: {
-        flex: 1,
-        justifyContent: 'space-between',
-        marginHorizontal: 10
-    },
-    buttons: {
-        flex: 0.01,
+    notesButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        position: 'relative',
-        minHeight: 50
-    }
+        padding: 10,
+    },
+    buttonText: {
+        color: '#5838B4',
+        fontSize: 16,
+        marginLeft: 5,
+    },
+    modal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        maxHeight: '90%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    noteInput: {
+        height: 200,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+        textAlignVertical: 'top',
+        marginBottom: 20,
+    },
+    saveButton: {
+        backgroundColor: '#5838B4',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    saveButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    bottomSpacer: {
+        height: 40, // Adjust this value to increase or decrease the bottom space
+    },
 })
 
 

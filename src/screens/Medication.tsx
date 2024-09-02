@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import {
     ActivityIndicator,
     Keyboard,
@@ -11,223 +11,360 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
+    Alert,
+    FlatList
 } from 'react-native'
 import NewMedicationModal from '../components/NewMedicationModal'
 import NotesButton from '../components/NotesButton'
+import { useMedication } from '../context/MedicationContext'
+import Icon from 'react-native-vector-icons/MaterialIcons'
+import { Ionicons } from '@expo/vector-icons';
+import { MedicationContextType, MedicationModel } from '../context/MedicationContext'; // Add this import
 
 export default function Medication(): JSX.Element {
-    const [results, setResults] = useState(null)
+    const [results, setResults] = useState<React.ReactNode[] | null>(null)
     const [textEditable, setTextEditable] = useState(true)
     const [isSearchActive, setSearchActive] = useState(false)
     const [selectedMedication, setSelectedMedication] = useState({ name: '', id: '' })
     const [showModal, setShowModal] = useState(false)
     const [text, setText] = useState("")
-    const [userMedications, setUserMedications] = useState([])
+    const { medications, updateMedications } = useMedication() as { medications: MedicationModel[], updateMedications: () => void };
 
-    const updateUserMedications = async () => {
-        let tempUserMedications: MedicationModel[] = []
-        try {
-            let medicationScreenHash: string = await AsyncStorage.getItem('medicationScreen')
-            if (medicationScreenHash != null) {
-                let parsedMedicationScreen: Object = JSON.parse(medicationScreenHash)
-                Object.values(parsedMedicationScreen).forEach((value) => {
-                    let medication: MedicationModel = JSON.parse(value)
-                    tempUserMedications.push(medication)
-                })
-            } else {
-                console.log("The user medication list was updated but the hash was empty.")
-            }
-        } catch (e) {
-            console.log("There was an error getting the list of user medications: " + e)
-        } finally {
-            setUserMedications(tempUserMedications)
-        }
-    }
+    useEffect(() => {
+        updateMedications()
+    }, [])
 
-    const search = () => {
+    const search = useCallback(() => {
         const currentQuery = text
-        setResults(<ActivityIndicator size="small" color="#0000ff" />)
-        try {
-            setTextEditable(false)
-            fetch("https://api.fda.gov/drug/label.json?search=openfda.brand_name:" + currentQuery + '&limit=100')
-                .then(rawData => rawData.json())
-                .then(data => {
-                    if (data.error) {
-                        const notFoundText = <Text style={styles.error}>{"The results you searched for were not found."}</Text>
-                        setResults(notFoundText)
-                        return null
-                    }
-                    let itemsToRender = getItems(data)
-                    setResults(itemsToRender)
-                })
-                .then(() => setTextEditable(true))
-        } catch (error) {
-            const errorText = <Text style={styles.error}>{"There was an error, try again."}</Text>
-            setResults(errorText)
-        }
-    }
+        setResults([<ActivityIndicator key="loader" size="small" color="#0000ff" />])
+        setTextEditable(false)
 
-    const getItems = (data) => {
-        return data.results.map((item) => {
-            return (
-                <TouchableOpacity
-                    key={item.id}
-                    onPress={() =>
-                        searchResultPressed(item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].substr(1).toLowerCase())
-                    }
-                >
-                    <View style={styles.item}>
-                        <Text style={styles.drugName}>
-                            {item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].substr(1).toLowerCase()}
-                        </Text>
-                        <Text style={styles.drugInfo}>
-                            {`Generic: ${item.openfda.generic_name[0]}`}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            )
-        })
-    }
+        fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:${currentQuery}&limit=5`)
+            .then(rawData => rawData.json())
+            .then(data => {
+                if (data.error) {
+                    setResults([<Text style={styles.error}>{"The results you searched for were not found."}</Text>])
+                } else {
+                    setResults(getItems(data))
+                }
+            })
+            .catch(() => {
+                setResults([<Text style={styles.error}>{"There was an error, try again."}</Text>])
+            })
+            .finally(() => setTextEditable(true))
+    }, [text])
 
-    const searchResultPressed = (medName) => {
-        const medID: string = generateNewMedicationID()
+    const searchResultPressed = useCallback((medName: string) => {
+        const medID = `${Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1)}`
         setSelectedMedication({ name: medName, id: medID })
         setText("")
         setResults(null)
         setShowModal(true)
-    }
+    }, [])
 
-    const generateNewMedicationID = () => {
-        return `${Math.floor((Math.random() * Number.MAX_SAFE_INTEGER) + 1)}`
-    }
+    const getItems = useCallback((data) => {
+        return data.results.map((item) => (
+            <TouchableOpacity
+                key={item.id}
+                onPress={() => searchResultPressed(item.openfda.brand_name[0])}
+                style={styles.searchResultCard}
+            >
+                <View style={styles.searchResultInfo}>
+                    <Text style={styles.drugName}>
+                        {item.openfda.brand_name[0].charAt(0).toUpperCase() + item.openfda.brand_name[0].slice(1).toLowerCase()}
+                    </Text>
+                    <Text style={styles.drugInfo}>
+                        {`Generic: ${item.openfda.generic_name[0]}`}
+                    </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={24} color="#5838B4" />
+            </TouchableOpacity>
+        ))
+    }, [searchResultPressed])
 
-    const medicationModalCancelToggle = () => {
-        setShowModal(!showModal)
-    }
+    const medicationModalCancelToggle = useCallback(() => setShowModal(prev => !prev), [])
 
-    const medicationModalSaveToggle = (medication: MedicationModel) => {
-        setShowModal(!showModal)
+    const medicationModalSaveToggle = useCallback(async (medication: MedicationModel) => {
+        setShowModal(false)
         setSearchActive(false)
-        storeMedicationData(medication, selectedMedication.id)
-        updateUserMedications()
-    }
-
-    const storeMedicationData = async (medication: MedicationModel, id: string) => {
         try {
-            let parentHash: string = await AsyncStorage.getItem("medicationScreen")
-            let medicationHash: string = JSON.stringify(medication)
-            let parsedParentHash: Object
-            if (parentHash == null) {
-                parsedParentHash = {
-                    id: medicationHash
-                }
-            } else {
-                parsedParentHash = JSON.parse(parentHash)
-                parsedParentHash[id] = medicationHash
-            }
-            let newEntry: string = JSON.stringify(parsedParentHash)
-            await AsyncStorage.setItem("medicationScreen", newEntry)
-        } catch (e) {
-            console.log(`There was an error saving the medication (key: ${id}): ${e}`)
+            await storeMedicationData(medication, selectedMedication.id)
+            await updateMedications()
+            Alert.alert("Medication saved successfully")
+        } catch (error) {
+            console.error("Error saving medication:", error)
+            Alert.alert("Error", "Failed to save medication")
         }
-    }
+    }, [selectedMedication.id, updateMedications])
 
-    const cancelButtonPressed = () => {
+    const storeMedicationData = useCallback(async (medication: MedicationModel, id: string) => {
+        try {
+            const parentHash = await AsyncStorage.getItem("medicationScreen")
+            const parsedParentHash = parentHash ? JSON.parse(parentHash) : {}
+            parsedParentHash[id] = JSON.stringify(medication)
+            await AsyncStorage.setItem("medicationScreen", JSON.stringify(parsedParentHash))
+        } catch (e) {
+            console.error(`Error saving medication (key: ${id}):`, e)
+            throw e
+        }
+    }, [])
+
+    const cancelButtonPressed = useCallback(() => {
         setSearchActive(false)
         setResults(null)
         setText("")
         Keyboard.dismiss()
-    }
+    }, [])
+
+    const deleteMedication = async (medicationId: string) => {
+        Alert.alert(
+            "Delete Medication",
+            "Are you sure you want to delete this medication?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    onPress: async () => {
+                        try {
+                            const medicationScreenHash = await AsyncStorage.getItem('medicationScreen');
+                            if (medicationScreenHash) {
+                                const parsedHash = JSON.parse(medicationScreenHash);
+                                delete parsedHash[medicationId];
+                                await AsyncStorage.setItem('medicationScreen', JSON.stringify(parsedHash));
+                                await updateMedications();
+                                Alert.alert("Medication deleted successfully");
+                            }
+                        } catch (error) {
+                            console.error("Error deleting medication:", error);
+                            Alert.alert("Error", "Failed to delete medication");
+                        }
+                    },
+                    style: "destructive"
+                }
+            ]
+        );
+    };
+
+    const editMedication = (medication: MedicationModel) => {
+        setSelectedMedication({ name: medication.name, id: medication.id });
+        setShowModal(true);
+    };
+
+    const renderItem = ({ item: med }) => (
+        <TouchableOpacity onPress={() => editMedication(med)}>
+            <View style={styles.medicationCard}>
+                <View style={styles.medicationInfo}>
+                    <Text style={styles.medicationName}>{med.name}</Text>
+                    <Text style={styles.medicationDoses}>{med.dailyDoses} dose{med.dailyDoses > 1 ? 's' : ''} per day</Text>
+                </View>
+                <View style={styles.medicationActions}>
+                    <NotesButton parentKey='medicationScreen' medicationID={med.id} />
+                    <TouchableOpacity onPress={() => deleteMedication(med.id)}>
+                        <Icon name="delete" size={24} color="#800020" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
         <SafeAreaView style={styles.androidSafeArea}>
-            <SafeAreaView style={{ flex: 1, margin: 10, alignSelf: 'center', alignContent: "center", flexDirection: "row" }}>
-                <TextInput
-                    onChangeText={value => setText(value)}
-                    onPressIn={() => setSearchActive(true)}
-                    autoCorrect={false}
-                    value={text}
-                    onSubmitEditing={() => search()}
-                    editable={textEditable}
-                    placeholder="Add a medication"
-                    clearButtonMode='always'
-                    style={styles.search}
-                />
-                {isSearchActive &&
-                    <Text style={styles.cancel} onPress={() => cancelButtonPressed()}>{"C A N C E L"}</Text>
-                }
-            </SafeAreaView>
-            <View style={{ flex: 9 }}>
-                {!isSearchActive &&
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ alignSelf: 'center', fontSize: 30 }}>{"Your Medications"}</Text>
-                        <ScrollView style={{ flex: 5 }}>
-                            {userMedications.length == 0 &&
-                                <Text style={{ fontSize: 16, marginLeft: 10, marginTop: 25 }}>{"No Current Medications."}</Text>
-                            }
-                            {userMedications.map((med, index) => (
-                                <View key={index} style={{ paddingVertical: 10, paddingLeft: 15 }}>
-                                    <Text key={med.name} style={{ fontSize: 20, paddingBottom: 5 }}>{med.name}</Text>
-                                    <NotesButton parentKey='medicationScreen' medicationID={med.id} />
-                                </View>
-                            ))}
-                        </ScrollView>
+            <View style={styles.searchContainer}>
+                <View style={styles.searchInputContainer}>
+                    <Ionicons name="search" size={24} color="#5838B4" style={styles.searchIcon} />
+                    <TextInput
+                        onChangeText={setText}
+                        onFocus={() => setSearchActive(true)}
+                        autoCorrect={false}
+                        value={text}
+                        onSubmitEditing={search}
+                        editable={textEditable}
+                        placeholder="Search medications"
+                        placeholderTextColor="#999"
+                        style={styles.searchInput}
+                        returnKeyType="search"
+                    />
+                    {text.length > 0 && (
+                        <TouchableOpacity onPress={() => setText('')} style={styles.clearButton}>
+                            <Ionicons name="close-circle" size={20} color="#999" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+                {isSearchActive && (
+                    <TouchableOpacity style={styles.cancelButton} onPress={cancelButtonPressed}>
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+            <View style={styles.contentContainer}>
+                {!isSearchActive ? (
+                    <View style={styles.medicationListContainer}>
+                        <Text style={styles.title}>{"Your Medications"}</Text>
+                        <FlatList
+                            data={medications}
+                            renderItem={renderItem}
+                            keyExtractor={(item) => item.id}
+                            contentContainerStyle={styles.medicationList}
+                            ListEmptyComponent={<Text style={styles.noMedications}>No Current Medications.</Text>}
+                        />
                     </View>
-                }
-                <ScrollView style={{ flex: 8 }}>{results}</ScrollView>
+                ) : (
+                    <FlatList
+                        data={results}
+                        renderItem={({ item }) => item && React.isValidElement(item) ? item : null}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={styles.medicationList}
+                    />
+                )}
             </View>
             <NewMedicationModal
                 medicationName={selectedMedication.name}
+                medicationId={selectedMedication.id}
                 cancelToggle={medicationModalCancelToggle}
                 saveToggle={medicationModalSaveToggle}
                 isOpen={showModal}
+                editingMedication={medications.find(med => med.id === selectedMedication.id)}
             />
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    error: {
-        textAlign: "center",
-        fontSize: 24
-    },
-    drugName: {
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    drugInfo: {
-        fontSize: 12
-    },
-    item: {
-        flex: 3,
-        borderBottomColor: "#767676",
-        borderBottomWidth: .5,
-        padding: 15
-    },
-    search: {
-        maxHeight: 50,
-        minHeight: 50,
-        maxWidth: '95%',
-        flex: 8,
-        textAlign: "center",
-        backgroundColor: "white",
-        borderRadius: 10,
-        borderWidth: 1.5,
-        borderColor: '#d3d3d3'
-    },
-    cancel: {
-        paddingTop: 12.5,
-        maxHeight: 50,
-        minHeight: 50,
-        maxWidth: '95%',
-        flex: 2,
-        textAlign: "center",
-        color: 'black'
-    },
     androidSafeArea: {
         flex: 1,
         backgroundColor: "white",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
-    }
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+    },
+    searchInputContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+        borderRadius: 20,
+        paddingHorizontal: 10,
+    },
+    searchIcon: {
+        marginRight: 10,
+    },
+    searchInput: {
+        flex: 1,
+        height: 40,
+        fontSize: 16,
+        color: '#333',
+    },
+    clearButton: {
+        padding: 5,
+    },
+    cancelButton: {
+        marginLeft: 10,
+    },
+    cancelButtonText: {
+        color: '#5838B4',
+        fontSize: 16,
+    },
+    contentContainer: {
+        flex: 1,
+    },
+    medicationListContainer: {
+        flex: 1,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+        marginVertical: 15,
+        marginHorizontal: 15,
+    },
+    medicationCard: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 10,
+        marginHorizontal: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+    },
+    medicationInfo: {
+        flex: 1,
+    },
+    medicationName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    medicationDoses: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 5,
+    },
+    medicationActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    noMedications: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 30,
+    },
+    error: {
+        textAlign: "center",
+        fontSize: 16,
+        color: '#ff0000',
+        marginTop: 20,
+    },
+    searchResultCard: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 15,
+        marginBottom: 10,
+        marginHorizontal: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+    },
+    searchResultInfo: {
+        flex: 1,
+    },
+    drugName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    drugInfo: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 5,
+    },
+    medicationList: {
+        paddingTop: 10,
+        paddingBottom: 20,
+    },
 })
